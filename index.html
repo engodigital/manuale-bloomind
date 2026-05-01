@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manuale del Collaboratore — BlooMIND</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#1A1A2E',
+        accent: '#E94560',
+        secondary: '#16213E',
+        success: '#1A7A4A',
+        warning: '#C47A00'
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        heading: ['Poppins', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+<style>
+  :root { --fs: 18px; }
+  html { font-size: var(--fs); scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; color: #1A1A2E; background: #f5f5f7; }
+  h1,h2,h3,h4 { font-family: 'Poppins', sans-serif; }
+
+  /* SIDEBAR */
+  #sidebar { width: 260px; min-width: 260px; background: #1A1A2E; height: 100vh; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 40; transition: transform .3s; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: #E94560; border-radius: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: #a0aec0; font-size: 0.82rem; cursor: pointer; border-left: 3px solid transparent; transition: all .2s; text-decoration: none; }
+  .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
+  .nav-item.active { color: #E94560; border-left-color: #E94560; background: rgba(233,69,96,.1); }
+  .nav-progress { height: 3px; background: linear-gradient(to right, #E94560, #ff8c69); transition: width .3s; }
+
+  /* MAIN CONTENT */
+  #main { margin-left: 260px; min-height: 100vh; }
+  .section-card { background: #fff; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.06); }
+  .section-title { font-size: 1.8rem; color: #1A1A2E; margin-bottom: 0.5rem; }
+  .section-subtitle { color: #5a6070; font-size: 1rem; margin-bottom: 2rem; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0f3460 100%); color: #fff; border-radius: 16px; padding: 4rem 3rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; background: rgba(233,69,96,.15); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; left: -40px; width: 200px; height: 200px; background: rgba(233,69,96,.1); border-radius: 50%; }
+  .stat-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: 1.2rem 1.5rem; text-align: center; backdrop-filter: blur(10px); }
+  .stat-number { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #E94560; }
+
+  /* ACCORDION */
+  .accordion-btn { width: 100%; text-align: left; padding: 1rem 1.2rem; background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; font-weight: 600; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; font-size: 0.95rem; }
+  .accordion-btn:hover { background: #eef0f4; }
+  .accordion-btn.open { background: #1A1A2E; color: #fff; border-color: #1A1A2E; border-radius: 10px 10px 0 0; }
+  .accordion-btn .arrow { transition: transform .3s; font-size: 1.1rem; }
+  .accordion-btn.open .arrow { transform: rotate(180deg); }
+  .accordion-content { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px; padding: 1.2rem; background: #fff; display: none; color: #2d3748; font-size: 0.95rem; line-height: 1.7; }
+  .accordion-content.open { display: block; }
+
+  /* TABS */
+  .tab-btn { padding: .7rem 1.4rem; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 2px solid transparent; color: #5a6070; background: #f0f2f5; transition: all .2s; }
+  .tab-btn.active { background: #1A1A2E; color: #fff; border-color: #1A1A2E; }
+  .tab-content { display: none; padding: 1.5rem; background: #fff; border: 2px solid #1A1A2E; border-radius: 0 8px 8px 8px; }
+  .tab-content.active { display: block; }
+
+  /* TOGGLE */
+  .toggle-btn { padding: .6rem 1.2rem; border-radius: 30px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 2px solid #1A1A2E; color: #1A1A2E; background: #fff; transition: all .2s; }
+  .toggle-btn.active { background: #1A1A2E; color: #fff; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 16px; padding: 2rem; max-width: 560px; width: 100%; position: relative; max-height: 85vh; overflow-y: auto; }
+  .modal-box h3 { font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #1A1A2E; margin-bottom: 1rem; }
+  .script-text { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1rem; font-size: 0.9rem; line-height: 1.7; color: #2d3748; white-space: pre-wrap; }
+
+  /* COPY BUTTON */
+  .copy-btn { display: inline-flex; align-items: center; gap: 6px; padding: .5rem 1rem; background: #E94560; color: #fff; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; }
+  .copy-btn:hover { background: #c73652; }
+  .copy-btn.copied { background: #1A7A4A; }
+
+  /* SCRIPT BOX */
+  .script-box { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1.2rem; font-size: 0.92rem; line-height: 1.8; color: #2d3748; position: relative; }
+  .script-title { font-weight: 700; color: #E94560; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
+
+  /* CHECKLIST */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .check-item input[type=checkbox] { width: 20px; height: 20px; accent-color: #1A7A4A; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .check-item label { cursor: pointer; font-size: 0.95rem; line-height: 1.5; color: #2d3748; }
+  .check-item input:checked + label { text-decoration: line-through; color: #a0aec0; }
+
+  /* TIMELINE */
+  .timeline { display: flex; gap: 0; overflow-x: auto; padding: 1.5rem 0; }
+  .tl-step { flex: 1; min-width: 100px; text-align: center; position: relative; cursor: pointer; }
+  .tl-step::after { content: ''; position: absolute; top: 20px; left: 60%; width: 80%; height: 3px; background: #e2e8f0; z-index: 0; }
+  .tl-step:last-child::after { display: none; }
+  .tl-dot { width: 42px; height: 42px; border-radius: 50%; background: #e2e8f0; border: 3px solid #e2e8f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 800; font-size: 0.9rem; color: #5a6070; position: relative; z-index: 1; transition: all .3s; }
+  .tl-step.active .tl-dot { background: #E94560; border-color: #E94560; color: #fff; }
+  .tl-step.done .tl-dot { background: #1A7A4A; border-color: #1A7A4A; color: #fff; }
+  .tl-label { font-size: 0.75rem; font-weight: 600; color: #5a6070; line-height: 1.3; }
+  .tl-step.active .tl-label { color: #E94560; }
+
+  /* INFO CARDS */
+  .info-card { background: #f8f9fa; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; }
+  .info-card.accent { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border: none; }
+  .info-card.success { background: #f0fdf4; border-color: #1A7A4A; }
+  .info-card.warning { background: #fffbeb; border-color: #C47A00; }
+  .info-card.danger { background: #fff5f7; border-color: #E94560; }
+
+  /* SLIDER */
+  input[type=range] { accent-color: #E94560; width: 100%; height: 6px; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+  .badge-red { background: #fff5f7; color: #E94560; border: 1px solid #E94560; }
+  .badge-green { background: #f0fdf4; color: #1A7A4A; border: 1px solid #1A7A4A; }
+  .badge-blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #1d4ed8; }
+  .badge-coming { background: #fefce8; color: #854d0e; border: 1px solid #C47A00; }
+
+  /* STEP FLOW */
+  .step-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .step-pill { background: #1A1A2E; color: #fff; padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
+  .step-arrow { color: #E94560; font-size: 1.2rem; font-weight: 700; }
+
+  /* FONT CONTROL */
+  #font-ctrl { position: fixed; bottom: 80px; right: 20px; z-index: 50; display: flex; flex-direction: column; gap: 6px; }
+  .fc-btn { width: 40px; height: 40px; background: #1A1A2E; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+  .fc-btn:hover { background: #E94560; }
+  .fc-label { text-align: center; font-size: 0.7rem; color: #5a6070; font-weight: 600; }
+
+  /* BACK TO TOP */
+  #back-top { position: fixed; bottom: 20px; right: 20px; z-index: 50; width: 40px; height: 40px; background: #E94560; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; display: none; align-items: center; justify-content: center; }
+  #back-top.show { display: flex; }
+
+  /* MOBILE */
+  #hamburger { display: none; position: fixed; top: 12px; left: 12px; z-index: 60; background: #1A1A2E; color: #fff; border: none; border-radius: 8px; width: 42px; height: 42px; font-size: 1.3rem; cursor: pointer; align-items: center; justify-content: center; }
+  #mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 35; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #hamburger { display: flex; }
+    #mob-overlay.show { display: block; }
+    .hero { padding: 2.5rem 1.5rem; }
+    .section-card { padding: 1.5rem; }
+    .timeline { gap: 0; }
+    .tl-step { min-width: 80px; }
+  }
+
+  /* FADE IN */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* 4F BOX */
+  .f4-step { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .f4-letter { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #E94560; line-height: 1; }
+  .f4-word { font-weight: 700; font-size: 1rem; color: #1A1A2E; }
+  .f4-desc { font-size: 0.85rem; color: #5a6070; margin-top: .3rem; }
+
+  /* WEEKLY GRID */
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .week-day { border-radius: 10px; padding: .7rem .3rem; text-align: center; font-size: 0.78rem; font-weight: 600; }
+  .week-day .day-name { font-size: 0.7rem; color: #5a6070; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+  .week-day.prodotto { background: #eff6ff; border: 2px solid #1d4ed8; }
+  .week-day.business { background: #f0fdf4; border: 2px solid #1A7A4A; }
+  .week-day.rest { background: #f9fafb; border: 2px dashed #e2e8f0; color: #a0aec0; }
+
+  /* MIC BOX */
+  .mic-box { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border-radius: 14px; padding: 1.5rem 2rem; border-left: 5px solid #E94560; }
+
+  /* TOOL CARD */
+  .tool-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; transition: border-color .2s, box-shadow .2s; }
+  .tool-card:hover { border-color: #1A1A2E; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .tool-card.coming { border-color: #C47A00; border-style: dashed; background: #fffbeb; }
+  .tool-icon { font-size: 2.5rem; margin-bottom: .8rem; }
+</style>
+</head>
+<body>
+
+<!-- HAMBURGER -->
+<button id="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+<div id="mob-overlay" onclick="toggleSidebar()"></div>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div style="padding:1.5rem 1.2rem 1rem;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:.3rem;">
+      <div style="width:36px;height:36px;background:#E94560;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-family:'Poppins',sans-serif;font-size:1rem;">B</div>
+      <div>
+        <div style="color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:.95rem;line-height:1.1;">BlooMIND</div>
+        <div style="color:#a0aec0;font-size:.7rem;">Manuale Collaboratore</div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;">
+      <div class="nav-progress" id="progress-bar" style="width:0%;height:4px;"></div>
+    </div>
+    <div style="color:#a0aec0;font-size:.72rem;margin-top:.4rem;" id="progress-label">0% completato</div>
+  </div>
+
+  <div style="padding:.5rem 0 2rem;">
+    <a class="nav-item active" onclick="navTo('s0'); return false;" href="javascript:void(0)">🏠 Benvenuto</a>
+    <a class="nav-item" onclick="navTo('s1'); return false;" href="javascript:void(0)">💡 Chi Siamo</a>
+    <a class="nav-item" onclick="navTo('s2'); return false;" href="javascript:void(0)">📅 I 7 Giorni</a>
+    <a class="nav-item" onclick="navTo('s3'); return false;" href="javascript:void(0)">📝 Lista Nomi</a>
+    <a class="nav-item" onclick="navTo('s4'); return false;" href="javascript:void(0)">📱 L'Invito</a>
+    <a class="nav-item" onclick="navTo('s5'); return false;" href="javascript:void(0)">🎀 Grande Giorno</a>
+    <a class="nav-item" onclick="navTo('s6'); return false;" href="javascript:void(0)">🎯 Follow-Up</a>
+    <a class="nav-item" onclick="navTo('s7'); return false;" href="javascript:void(0)">🛡 Obiezioni</a>
+    <a class="nav-item" onclick="navTo('s8'); return false;" href="javascript:void(0)">📸 Social Media</a>
+    <a class="nav-item" onclick="navTo('s9'); return false;" href="javascript:void(0)">🔧 Strumenti</a>
+    <a class="nav-item" onclick="navTo('s10'); return false;" href="javascript:void(0)">🎙️ Esercitazione</a>
+    <a class="nav-item" onclick="navTo('s11'); return false;" href="javascript:void(0)">🏁 Prossimi Passi</a>
+  </div>
+
+  <div style="padding:.8rem 1.2rem;margin:.5rem 1rem 1.5rem;background:rgba(233,69,96,.12);border:1px solid rgba(233,69,96,.3);border-radius:8px;">
+    <div style="font-size:.7rem;color:#E94560;font-weight:700;margin-bottom:.3rem;">🔒 USO RISERVATO</div>
+    <div style="font-size:.68rem;color:#a0aec0;line-height:1.5;">Documento riservato ai collaboratori BlooMIND. È vietata la riproduzione, condivisione o distribuzione a terzi non autorizzati.</div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main" style="padding:2rem;">
+
+<!-- HERO -->
+<div class="hero fade-in" id="s0">
+  <div style="position:relative;z-index:1;">
+    <div style="display:inline-block;background:rgba(233,69,96,.2);border:1px solid rgba(233,69,96,.4);border-radius:30px;padding:.3rem 1rem;font-size:.82rem;font-weight:600;color:#ff8c69;margin-bottom:1rem;">🚀 Benvenuto nel Team</div>
+    <h1 style="font-size:2.8rem;font-weight:800;line-height:1.15;margin-bottom:1rem;color:#fff;">Il tuo Manuale<br><span style="color:#E94560;">BlooMIND</span></h1>
+    <p style="font-size:1.1rem;color:#cbd5e0;max-width:550px;line-height:1.7;margin-bottom:2rem;">Tutto quello che devi sapere per iniziare, in un unico posto. Segui ogni passo e i risultati arriveranno.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;max-width:600px;margin-bottom:2rem;">
+      <div class="stat-card">
+        <div class="stat-number" id="cnt1">0</div>
+        <div style="color:#a0aec0;font-size:.82rem;margin-top:.2rem;">€ per ospite</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="cnt2">0</div>
+        <div style="color:#a0aec0;font-size:.82rem;margin-top:.2rem;">% conversioni con follow-up</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="cnt3">0</div>
+        <div style="color:#a0aec0;font-size:.82rem;margin-top:.2rem;">giorni per i tuoi primi risultati</div>
+      </div>
+    </div>
+    <button onclick="navTo('s1')" style="background:#E94560;color:#fff;padding:.9rem 2rem;border-radius:10px;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='#c73652'" onmouseout="this.style.background='#E94560'">Inizia il percorso →</button>
+  </div>
+</div>
+
+<!-- S1: CHI SIAMO -->
+<div class="section-card fade-in" id="s1">
+  <h2 class="section-title">💡 Chi Siamo &amp; La Nostra Filosofia</h2>
+  <p class="section-subtitle">Prima di iniziare, capisci dove sei entrato e perché questo sistema funziona.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;margin-bottom:2rem;">
+    <div class="info-card danger">
+      <div style="font-weight:700;color:#E94560;margin-bottom:.8rem;font-size:1rem;">❌ Non è questo</div>
+      <ul style="color:#4a5568;font-size:.9rem;line-height:1.8;padding-left:1.2rem;">
+        <li>Vendere porta a porta</li>
+        <li>Convincere le persone a forza</li>
+        <li>Fare pressione su amici e parenti</li>
+        <li>Spam di messaggi identici a tutti</li>
+      </ul>
+    </div>
+    <div class="info-card success">
+      <div style="font-weight:700;color:#1A7A4A;margin-bottom:.8rem;font-size:1rem;">✅ È questo</div>
+      <ul style="color:#2d5a3d;font-size:.9rem;line-height:1.8;padding-left:1.2rem;">
+        <li>Condividere qualcosa in cui credi</li>
+        <li>Ascoltare le esigenze delle persone</li>
+        <li>Seguire un sistema già collaudato</li>
+        <li>Costruire una rete che lavora per te</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="info-card accent" style="margin-bottom:1.5rem;">
+    <div style="font-size:1.5rem;margin-bottom:.5rem;font-style:italic;color:#ff8c69;">"The money is on the list."</div>
+    <div style="font-size:.9rem;color:#a0aec0;line-height:1.6;">I soldi sono nella lista. Ogni persona nella tua rubrica è una potenziale opportunità. Non decidere al posto loro: dagli l'opportunità di ascoltare e saranno loro a scegliere.</div>
+  </div>
+
+  <h3 style="font-size:1.3rem;margin-bottom:1rem;color:#1A1A2E;">Il Softmarketing: il nostro metodo</h3>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1rem;">Il Softmarketing è l'approccio che usiamo. Mette al centro <strong>le esigenze della persona</strong>, non il tuo bisogno di vendere. Sei una guida che aiuta qualcuno a trovare una soluzione — non un venditore che deve chiudere a tutti i costi.</p>
+
+  <div class="info-card warning" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#C47A00;margin-bottom:.5rem;">💡 La mentalità giusta — il ristorante da 100.000€</div>
+    <p style="color:#5a4a00;font-size:.92rem;line-height:1.7;">Immagina di aver speso 100.000€ per aprire un ristorante. Inviteresti solo 5 amici all'inaugurazione? No — chiameresti ogni persona che conosci, faresti pubblicità, useresti ogni canale. <strong>Qui è uguale.</strong> Il tuo negozio online esiste — se non ne parli, non esiste per nessuno.</p>
+  </div>
+
+  <div style="background:#f8f9fa;border-radius:12px;padding:1.5rem;border-left:4px solid #E94560;">
+    <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:.5rem;">🏆 La regola d'oro</div>
+    <p style="color:#4a5568;font-size:.95rem;line-height:1.7;margin:0;">"Il successo non dipende da quanto sei bravo a parlare. Dipende da quanto sei <strong>fedele al sistema</strong>. Segui ogni passo, non saltarne nessuno, e i risultati arriveranno."</p>
+  </div>
+</div>
+
+<!-- S2: PANORAMICA 7 GIORNI -->
+<div class="section-card fade-in" id="s2">
+  <h2 class="section-title">📅 Il Metodo: Panoramica dei 7 Giorni</h2>
+  <p class="section-subtitle">Il tuo lancio ufficiale si chiama <strong>Inaugurazione</strong>. È l'evento con cui apri il tuo negozio online al mondo. Dura 7 giorni di preparazione + l'evento + il follow-up.</p>
+
+  <div class="timeline" style="margin-bottom:2rem;" id="tl-container">
+    <div class="tl-step done" onclick="navTo('s3')">
+      <div class="tl-dot">1</div>
+      <div class="tl-label">Lista<br>Nomi</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s4')">
+      <div class="tl-dot">2</div>
+      <div class="tl-label">Invito<br>Giorno 2</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s4')">
+      <div class="tl-dot">3</div>
+      <div class="tl-label">Invito<br>Giorno 3</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s4')">
+      <div class="tl-dot">4</div>
+      <div class="tl-label">Invito<br>Giorno 4</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s4')">
+      <div class="tl-dot">5</div>
+      <div class="tl-label">Invito<br>Giorno 5</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s4')">
+      <div class="tl-dot">6</div>
+      <div class="tl-label">Remind<br>Giorno 6</div>
+    </div>
+    <div class="tl-step active" onclick="navTo('s5')">
+      <div class="tl-dot">7</div>
+      <div class="tl-label">🎀 Grande<br>Giorno</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s6')">
+      <div class="tl-dot">→</div>
+      <div class="tl-label">Follow-Up<br>24h</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+    <div class="info-card" style="border-left:4px solid #1d4ed8;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:.5rem;">Giorno 1</div>
+      <div style="font-size:.9rem;color:#4a5568;">Scrivi la tua lista di almeno <strong>100 persone</strong>. Non escludere nessuno.</div>
+    </div>
+    <div class="info-card" style="border-left:4px solid #7c3aed;">
+      <div style="font-weight:700;color:#7c3aed;margin-bottom:.5rem;">Giorni 2-6</div>
+      <div style="font-size:.9rem;color:#4a5568;"><strong>30 telefonate</strong> ai più vicini, <strong>70 audio</strong> personalizzati agli altri.</div>
+    </div>
+    <div class="info-card" style="border-left:4px solid #E94560;">
+      <div style="font-weight:700;color:#E94560;margin-bottom:.5rem;">Giorno 7</div>
+      <div style="font-size:.9rem;color:#4a5568;">L'evento su Zoom. Tu accogli, lo sponsor presenta. Il tuo <strong>taglio del nastro</strong>.</div>
+    </div>
+    <div class="info-card" style="border-left:4px solid #1A7A4A;">
+      <div style="font-weight:700;color:#1A7A4A;margin-bottom:.5rem;">Post-Evento</div>
+      <div style="font-size:.9rem;color:#4a5568;">Il follow-up entro <strong>24 ore</strong>. Qui avviene l'80% delle conversioni.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: LISTA NOMI -->
+<div class="section-card fade-in" id="s3">
+  <h2 class="section-title">📝 Giorno 1 — La Tua Lista Nomi</h2>
+  <p class="section-subtitle">Il tuo primo compito: costruire una lista di almeno 100-200 persone. Non "i tuoi 10 amici" — <em>tutti quelli che conosci</em>.</p>
+
+  <div class="info-card warning" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#C47A00;font-size:1rem;margin-bottom:.5rem;">⚠️ Regola n°1: Nessun pregiudizio</div>
+    <p style="color:#5a4a00;font-size:.92rem;line-height:1.7;margin:0;">Non puoi sapere chi è interessato. Le persone più impensabili sono spesso quelle che acquistano di più o che si uniscono al business. <strong>Non decidere al posto loro</strong> — dagli l'opportunità di ascoltare.</p>
+  </div>
+
+  <!-- CALCOLATORE -->
+  <div style="background:#f8f9fa;border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;border:1px solid #e2e8f0;">
+    <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:1rem;">🧮 Il tuo calcolatore di risultati</div>
+    <label style="font-size:.9rem;color:#4a5568;font-weight:600;">Quante persone hai in lista? <span id="slider-val" style="color:#E94560;font-weight:800;">100</span></label>
+    <input type="range" min="20" max="300" value="100" id="lista-slider" oninput="calcResult(this.value)" style="margin:.8rem 0;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem;">
+      <div style="text-align:center;background:#fff;border-radius:10px;padding:.8rem;border:1px solid #e2e8f0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#1d4ed8;" id="res-conferme">30</div>
+        <div style="font-size:.78rem;color:#5a6070;">Conferme attese</div>
+      </div>
+      <div style="text-align:center;background:#fff;border-radius:10px;padding:.8rem;border:1px solid #e2e8f0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#7c3aed;" id="res-presenti">20</div>
+        <div style="font-size:.78rem;color:#5a6070;">Presenti all'evento</div>
+      </div>
+      <div style="text-align:center;background:#fff;border-radius:10px;padding:.8rem;border:1px solid #e2e8f0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#E94560;" id="res-guadagno">300€</div>
+        <div style="font-size:.78rem;color:#5a6070;">Guadagno potenziale</div>
+      </div>
+    </div>
+    <div style="margin-top:.8rem;font-size:.78rem;color:#a0aec0;">Media di settore: 20€ per ogni ospite presente</div>
+  </div>
+
+  <!-- ESERCIZIO MNEMONICO -->
+  <div style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:.8rem;">🧠 Esercizio mnemonico — dove trovare i 100 nomi</div>
+    <p style="color:#4a5568;font-size:.92rem;line-height:1.7;margin-bottom:1rem;">Apri la rubrica del tuo telefono e sfoglia lettera per lettera. Per ogni categoria qui sotto, scrivi tutti i nomi che ti vengono in mente:</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem;">
+      <div style="background:#eff6ff;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#1d4ed8;">🎓 Scuola e università</div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#1A7A4A;">🏃 Sport e palestra</div>
+      <div style="background:#fdf4ff;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#7c3aed;">💼 Lavoro (ex e attuale)</div>
+      <div style="background:#fff5f7;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#E94560;">👨‍👩‍👧 Famiglia e parenti</div>
+      <div style="background:#fffbeb;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#C47A00;">🏘️ Vicini di casa</div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#4a5568;">📱 Social media</div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#4a5568;">👶 Genitori scuola figli</div>
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:.8rem;font-size:.88rem;font-weight:600;color:#4a5568;">⛪ Comunità / hobby</div>
+    </div>
+  </div>
+
+  <div class="info-card success">
+    <div style="font-weight:700;color:#1A7A4A;margin-bottom:.3rem;">✅ Il tuo obiettivo oggi</div>
+    <div style="font-size:.92rem;color:#2d5a3d;">Scrivi una lista di almeno <strong>100 nomi</strong> su carta o su telefono. Poi fissa la data dell'Inaugurazione con il tuo sponsor. Da quel momento, parte la tua Tabella di Marcia.</div>
+  </div>
+</div>
+
+<!-- S4: L'INVITO -->
+<div class="section-card fade-in" id="s4">
+  <h2 class="section-title">📱 Giorni 2-6 — L'Invito Perfetto</h2>
+  <p class="section-subtitle">Non basta avere una lista grande. Conta <em>come</em> inviti le persone. Un messaggio sbagliato brucia anche il contatto più caldo.</p>
+
+  <div class="info-card danger" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#E94560;margin-bottom:.5rem;">🚫 Mai fare così</div>
+    <div style="font-size:.9rem;color:#4a5568;font-style:italic;background:#fff;border-radius:8px;padding:.8rem;border:1px solid #f0b8c0;">"Ciao! Ho aperto il mio negozio online, dai un'occhiata 👉 [link]"</div>
+    <div style="font-size:.82rem;color:#E94560;margin-top:.5rem;">❌ Messaggio freddo, copia-incolla, nessun valore → ignorato al 99%</div>
+  </div>
+
+  <div style="margin-bottom:1.5rem;">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="toggle-btn active" id="tog-caldo" onclick="toggleScript('caldo')">🔥 Contatto Caldo</button>
+      <button class="toggle-btn" id="tog-tiepido" onclick="toggleScript('tiepido')">🌡️ Contatto Tiepido</button>
+    </div>
+
+    <div id="script-caldo">
+      <div class="script-title">CONTATTO CALDO — Chiama al telefono o manda un audio vocale</div>
+      <div class="script-box">
+"Ciao [Nome], come stai? Ti sento da un po' — pensavo a te l'altro giorno e ho capito che ci tengo davvero a condividere questa cosa con te.
+
+Ho aperto il mio negozio online e tra [X giorni] faccio l'inaugurazione su Zoom — sarà un evento leggero, 30-40 minuti, e ho messo in palio anche dei premi a sorpresa per chi partecipa 🎁
+
+Per me sarebbe davvero importante averti lì. Riesci a tenerti libero/a il [data] alle [ora]?"</div>
+      <div style="margin-top:.8rem;display:flex;gap:.8rem;flex-wrap:wrap;">
+        <button class="copy-btn" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+        <span style="font-size:.82rem;color:#1A7A4A;align-self:center;">✓ Chiama o manda un audio — non testo scritto</span>
+      </div>
+      <textarea id="script-caldo-text" style="display:none;">Ciao [Nome], come stai? Ti sento da un po' — pensavo a te l'altro giorno e ho capito che ci tengo davvero a condividere questa cosa con te. Ho aperto il mio negozio online e tra [X giorni] faccio l'inaugurazione su Zoom — sarà un evento leggero, 30-40 minuti, e ho messo in palio anche dei premi a sorpresa per chi partecipa. Per me sarebbe davvero importante averti lì. Riesci a tenerti libero/a il [data] alle [ora]?</textarea>
+    </div>
+
+    <div id="script-tiepido" style="display:none;">
+      <div class="script-title">CONTATTO TIEPIDO — Messaggio scritto o audio breve</div>
+      <div class="script-box">
+"Ciaoooo [Nome]! Come stai?
+
+Volevo condividere con te una novità a cui tengo tantissimo: ho appena aperto il mio negozio online! 🚀 Per festeggiare, ho organizzato una piccola inaugurazione su Zoom: durerà circa 30-40 minuti e ci sarà anche un'estrazione con un regalo speciale per chi partecipa! 🎁
+
+Mi farebbe davvero piacere avere il tuo supporto. Riesci il [data] alle [ora]?"</div>
+      <div style="margin-top:.8rem;">
+        <button class="copy-btn" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+      </div>
+      <textarea id="script-tiepido-text" style="display:none;">Ciaoooo [Nome]! Come stai? Volevo condividere con te una novità a cui tengo tantissimo: ho appena aperto il mio negozio online! Per festeggiare, ho organizzato una piccola inaugurazione su Zoom: durerà circa 30-40 minuti e ci sarà anche un'estrazione con un regalo speciale per chi partecipa! Mi farebbe davvero piacere avere il tuo supporto. Riesci il [data] alle [ora]?</textarea>
+    </div>
+  </div>
+
+  <!-- ACCORDION -->
+  <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem;">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      ❓ "Di cosa si tratta?" — Cosa rispondere <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <p style="margin-bottom:.8rem;">Questa è la domanda più comune. <strong>Non spiegare nulla al telefono</strong> — ci metteresti un'ora e lo faresti male. Usa questa risposta:</p>
+      <div class="script-box">"Guarda [Nome], ti spiegherei male al telefono — ci vorrebbe almeno un'ora e rovinerei la sorpresa! Sai che ho preparato qualcosa di speciale per chi partecipa? Non voglio anticipare nulla. Vieni all'inaugurazione, dura solo 30 minuti e capisci tutto. Ci sei?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="acc1-text" style="display:none;">Guarda [Nome], ti spiegherei male al telefono — ci vorrebbe almeno un'ora e rovinerei la sorpresa! Sai che ho preparato qualcosa di speciale per chi partecipa? Non voglio anticipare nulla. Vieni all'inaugurazione, dura solo 30 minuti e capisci tutto. Ci sei?</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      😔 "Non posso venire, ho impegni" — Cosa rispondere <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Non ti preoccupare — stiamo già andando sold out! Sto però già organizzando una seconda data, ti aggiorno appena la confermo. Un caro saluto! 😊"</div>
+      <div style="margin-top:.8rem;font-size:.85rem;color:#1A7A4A;font-weight:600;">→ Non chiudere il contatto. Quella persona resta in lista per la prossima occasione.</div>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      🎯 I numeri che contano: quante telefonate fare <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="step-flow" style="margin-bottom:1rem;">
+        <div class="step-pill">📞 30 telefonate<br><small>contatti caldi</small></div>
+        <div class="step-arrow">+</div>
+        <div class="step-pill">🎤 70 audio<br><small>contatti medi</small></div>
+        <div class="step-arrow">=</div>
+        <div class="step-pill" style="background:#E94560;">💥 ~35 conferme<br><small>risultato atteso</small></div>
+      </div>
+      <p style="font-size:.88rem;color:#4a5568;line-height:1.7;">Per i 3-5 giorni di invito, focalizzati <strong>solo sugli inviti</strong>. Nessuna distrazione. Ogni sera, controlla chi ha confermato e manda un reminder il giorno prima dell'evento.</p>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      🎁 Il premio ad estrazione — come usarlo <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <p style="font-size:.92rem;color:#4a5568;line-height:1.7;">Il premio ad estrazione (la "ruota della fortuna") è una leva potente per aumentare le conferme. Preparalo prima dell'evento con i nomi dei partecipanti confermati.</p>
+      <div class="info-card warning" style="margin-top:.8rem;">
+        <div style="font-weight:700;color:#C47A00;font-size:.9rem;">⚠️ Importante: non inserire familiari stretti</div>
+        <div style="font-size:.85rem;color:#5a4a00;margin-top:.3rem;">Il premio serve come leva di follow-up per trasformare il contatto in cliente. Con i familiari stretti, perde efficacia.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card" style="border-left:4px solid #7c3aed;">
+    <div style="font-weight:700;color:#7c3aed;margin-bottom:.5rem;">🖼️ La locandina su Canva</div>
+    <div style="font-size:.9rem;color:#4a5568;line-height:1.7;">Crea la tua locandina personale su Canva (il template è nella cartella del team). Scegli una tua foto professionale e allegala al messaggio di invito. Una locandina personalizzata aumenta significativamente le conferme.</div>
+  </div>
+</div>
+
+<!-- S5: GRANDE GIORNO -->
+<div class="section-card fade-in" id="s5">
+  <h2 class="section-title">🎀 Giorno 7 — Il Tuo Grande Giorno</h2>
+  <p class="section-subtitle">È il momento del tuo taglio del nastro. Sei emozionato/a? È normale. Ma ricorda: per i tuoi ospiti è solo "un evento online". La differenza tra un professionista e un dilettante si vede nelle azioni che fai oggi.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    <div style="background:#f8f9fa;border-radius:12px;padding:1.2rem;border-top:4px solid #E94560;">
+      <div style="font-weight:700;color:#E94560;margin-bottom:.5rem;">Il tuo ruolo</div>
+      <ul style="font-size:.88rem;color:#4a5568;line-height:1.8;padding-left:1.2rem;">
+        <li>Accogli gli ospiti</li>
+        <li>Racconta il tuo "perché"</li>
+        <li>Presenta lo sponsor</li>
+        <li>Monitora la chat</li>
+        <li>Gestisci l'estrazione</li>
+      </ul>
+    </div>
+    <div style="background:#f8f9fa;border-radius:12px;padding:1.2rem;border-top:4px solid #1A7A4A;">
+      <div style="font-weight:700;color:#1A7A4A;margin-bottom:.5rem;">Il ruolo dello sponsor</div>
+      <ul style="font-size:.88rem;color:#4a5568;line-height:1.8;padding-left:1.2rem;">
+        <li>Presenta i prodotti</li>
+        <li>Spiega il business</li>
+        <li>Risponde alle domande</li>
+        <li>Chiude la presentazione</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CHECKLIST PRE-EVENTO -->
+  <div style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:1rem;">✅ Checklist pre-evento (spunta man mano)</div>
+    <div id="checklist">
+      <div class="check-item"><input type="checkbox" id="c1" onchange="saveChecks()"><label for="c1">Ho inviato il reminder a tutti i confermati la sera prima</label></div>
+      <div class="check-item"><input type="checkbox" id="c2" onchange="saveChecks()"><label for="c2">Ho preparato la ruota della fortuna con i nomi dei confermati</label></div>
+      <div class="check-item"><input type="checkbox" id="c3" onchange="saveChecks()"><label for="c3">Ho provato a condividere lo schermo con la ruota</label></div>
+      <div class="check-item"><input type="checkbox" id="c4" onchange="saveChecks()"><label for="c4">Ho preparato il discorso di apertura (breve storytelling)</label></div>
+      <div class="check-item"><input type="checkbox" id="c5" onchange="saveChecks()"><label for="c5">Sono entrato/a in sala Zoom 15 minuti prima</label></div>
+      <div class="check-item"><input type="checkbox" id="c6" onchange="saveChecks()"><label for="c6">Ho inviato il link a tutti 10 minuti prima dell'evento</label></div>
+      <div class="check-item"><input type="checkbox" id="c7" onchange="saveChecks()"><label for="c7">Ho carta e penna per scrivere i nomi dei presenti</label></div>
+      <div class="check-item"><input type="checkbox" id="c8" onchange="saveChecks()"><label for="c8">Ho contattato lo sponsor per allinearci prima dell'evento</label></div>
+    </div>
+    <button onclick="resetChecks()" style="margin-top:.8rem;background:#f0f2f5;color:#5a6070;border:1px solid #e2e8f0;border-radius:8px;padding:.4rem .9rem;font-size:.82rem;cursor:pointer;">↺ Reset checklist</button>
+  </div>
+
+  <!-- EDIFICAZIONE -->
+  <div style="margin-bottom:1.5rem;">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      🌟 L'Edificazione — come presentare lo sponsor <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <p style="font-size:.92rem;color:#4a5568;line-height:1.7;margin-bottom:1rem;">L'edificazione è <strong>il passaggio più importante del Grande Giorno</strong>. Devi presentare lo sponsor in modo da alzare il suo valore percepito agli occhi degli ospiti. Più lo "edifica", più gli ospiti lo ascolteranno con attenzione.</p>
+      <div class="script-box">"Oggi insieme a me c'è un ospite speciale, è una delle persone che mi sta dando supporto costante in questa mia nuova avventura! Si occupa di benessere e business online da anni ed è un vero esperto in questo settore. Non vedo l'ora che lo conosciate — passo la parola a [Nome Sponsor]!"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia script edificazione</button>
+      <textarea id="edif-text" style="display:none;">Oggi insieme a me c'è un ospite speciale, è una delle persone che mi sta dando supporto costante in questa mia nuova avventura! Si occupa di benessere e business online da anni ed è un vero esperto in questo settore. Non vedo l'ora che lo conosciate — passo la parola a [Nome Sponsor]!</textarea>
+    </div>
+  </div>
+
+  <div class="info-card accent">
+    <div style="font-weight:700;font-size:1rem;margin-bottom:.8rem;color:#ff8c69;">📊 Monitora la chat durante la presentazione</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:1rem;text-align:center;">
+        <div style="font-size:2rem;font-weight:800;color:#ff8c69;">1</div>
+        <div style="font-size:.85rem;color:#a0aec0;margin-top:.3rem;">Scrive 1 in chat = Interessato ai <strong style="color:#fff;">prodotti</strong></div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:1rem;text-align:center;">
+        <div style="font-size:2rem;font-weight:800;color:#7dd3fc;">2</div>
+        <div style="font-size:.85rem;color:#a0aec0;margin-top:.3rem;">Scrive 2 in chat = Interessato al <strong style="color:#fff;">business</strong></div>
+      </div>
+    </div>
+    <p style="font-size:.85rem;color:#a0aec0;margin-top:1rem;">Fai screenshot della chat + scrivi su carta i nomi di tutti i presenti (anche chi non ha scritto nulla). Ti servirà per il follow-up.</p>
+  </div>
+</div>
+
+<!-- S6: FOLLOW-UP -->
+<div class="section-card fade-in" id="s6">
+  <h2 class="section-title">🎯 Follow-Up e Chiusura</h2>
+  <p class="section-subtitle">L'Inaugurazione è la semina. Il follow-up è il raccolto. Qui avviene l'<strong>80% delle conversioni</strong>.</p>
+
+  <div class="info-card danger" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#E94560;font-size:1rem;margin-bottom:.5rem;">😱 L'errore del 90%</div>
+    <p style="font-size:.92rem;color:#4a5568;line-height:1.7;margin:0;">Le statistiche globali nel network marketing mostrano che il <strong>90% dei collaboratori non ottiene risultati</strong> semplicemente perché non fa follow-up. Molti pensano che la presentazione faccia tutto il lavoro — ma senza un contatto post-evento, l'interesse cala ogni ora che passa.</p>
+  </div>
+
+  <!-- REGOLA 24/48/72 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+    <div style="background:#f0fdf4;border:2px solid #1A7A4A;border-radius:12px;padding:1.2rem;text-align:center;">
+      <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:#1A7A4A;">85%</div>
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin:.3rem 0;">Entro 24 ore</div>
+      <div style="font-size:.8rem;color:#2d5a3d;line-height:1.5;">Il momento d'oro. L'emozione è alta, i benefici sono freschi.</div>
+    </div>
+    <div style="background:#fffbeb;border:2px solid #C47A00;border-radius:12px;padding:1.2rem;text-align:center;">
+      <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:#C47A00;">50%</div>
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin:.3rem 0;">Entro 48 ore</div>
+      <div style="font-size:.8rem;color:#5a4a00;line-height:1.5;">La vita quotidiana inizia a prendere il sopravvento.</div>
+    </div>
+    <div style="background:#fff5f7;border:2px solid #E94560;border-radius:12px;padding:1.2rem;text-align:center;">
+      <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:#E94560;">⬇️</div>
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin:.3rem 0;">Oltre 72 ore</div>
+      <div style="font-size:.8rem;color:#7a0020;line-height:1.5;">L'impatto sbiadisce. Ogni ora di ritardo pesa il doppio.</div>
+    </div>
+  </div>
+
+  <!-- TAB -->
+  <div style="margin-bottom:.5rem;display:flex;gap:.3rem;flex-wrap:wrap;">
+    <button class="tab-btn active" onclick="openTab('t1',this)">Ha scritto 1 (prodotto)</button>
+    <button class="tab-btn" onclick="openTab('t2',this)">Ha scritto 2 (business)</button>
+    <button class="tab-btn" onclick="openTab('t3',this)">Non ha scritto nulla</button>
+  </div>
+  <div id="t1" class="tab-content active">
+    <div class="script-title">SCRIPT FOLLOW-UP — INTERESSE PRODOTTO</div>
+    <div class="script-box">"Ciao [Nome]! Ho visto che durante la presentazione hai mostrato interesse per i prodotti — ero sicura/o che qualcosa avrebbe attirato la tua attenzione 😊 Voglio assisterti nella scelta del prodotto più adatto a te, così da farti vivere la migliore esperienza possibile. Tra le soluzioni che abbiamo mostrato, quale ti ha colpito di più?"</div>
+    <div style="margin-top:1rem;background:#f0fdf4;border-radius:8px;padding:.8rem;font-size:.85rem;color:#2d5a3d;">
+      💡 <strong>Non mandare subito il catalogo!</strong> Prima capisce le sue esigenze, poi suggerisci il prodotto giusto. Chiedi, ascolta, consiglia.
+    </div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+    <textarea id="fu1-text" style="display:none;">Ciao [Nome]! Ho visto che durante la presentazione hai mostrato interesse per i prodotti — ero sicura/o che qualcosa avrebbe attirato la tua attenzione. Voglio assisterti nella scelta del prodotto più adatto a te, così da farti vivere la migliore esperienza possibile. Tra le soluzioni che abbiamo mostrato, quale ti ha colpito di più?</textarea>
+  </div>
+  <div id="t2" class="tab-content">
+    <div class="script-title">SCRIPT FOLLOW-UP — INTERESSE BUSINESS</div>
+    <div class="script-box">"Ciao [Nome]! Grazie per avermi supportato con la tua presenza — averti avuto con me in questa avventura è stato bellissimo! Ho visto che hai scritto 2 in chat... ottimo, immaginavo tu avessi questa visione! È davvero più potente di quanto immagini. Ho la possibilità di organizzare una call di approfondimento insieme al mio sponsor — iniziare con il suo supporto ti darebbe una marcia in più. Mi dai un paio di alternative di giorno e orario così fisso subito?"</div>
+    <div style="margin-top:1rem;background:#eff6ff;border-radius:8px;padding:.8rem;font-size:.85rem;color:#1e3a8a;">
+      💡 <strong>Non spiegare il business da solo/a.</strong> Chiedi supporto allo sponsor per la call a tre. Segui il sistema.
+    </div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+    <textarea id="fu2-text" style="display:none;">Ciao [Nome]! Grazie per avermi supportato con la tua presenza — averti avuto con me in questa avventura è stato bellissimo! Ho visto che hai scritto 2 in chat... ottimo, immaginavo tu avessi questa visione! È davvero più potente di quanto immagini. Ho la possibilità di organizzare una call di approfondimento insieme al mio sponsor — iniziare con il suo supporto ti darebbe una marcia in più. Mi dai un paio di alternative di giorno e orario così fisso subito?</textarea>
+  </div>
+  <div id="t3" class="tab-content">
+    <div class="script-title">SCRIPT FOLLOW-UP — NESSUNA REAZIONE DURANTE L'EVENTO</div>
+    <div class="script-box">"Ciao [Nome]! Grazie per aver partecipato all'inaugurazione — per me è stato davvero importante averti lì 🙏 Come ti senti rispetto a quello che hai visto? C'è qualcosa che ti ha incuriosito, o hai dubbi su cui ti posso aiutare?"</div>
+    <div style="margin-top:1rem;background:#fffbeb;border-radius:8px;padding:.8rem;font-size:.85rem;color:#5a4a00;">
+      💡 Un "no" oggi può diventare un "sì" domani. Mantieni il contatto in modo naturale, senza pressioni.
+    </div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+    <textarea id="fu3-text" style="display:none;">Ciao [Nome]! Grazie per aver partecipato all'inaugurazione — per me è stato davvero importante averti lì. Come ti senti rispetto a quello che hai visto? C'è qualcosa che ti ha incuriosito, o hai dubbi su cui ti posso aiutare?</textarea>
+  </div>
+</div>
+
+<!-- S7: OBIEZIONI -->
+<div class="section-card fade-in" id="s7">
+  <h2 class="section-title">🛡 Gestione delle Obiezioni</h2>
+  <p class="section-subtitle">Un'obiezione non è un rifiuto. È una <strong>richiesta d'aiuto</strong>. Chi objetta sta cercando conferme, non vuole scappare.</p>
+
+  <!-- 4F -->
+  <div style="margin-bottom:2rem;">
+    <h3 style="font-size:1.2rem;margin-bottom:1rem;color:#1A1A2E;">La Tecnica delle 4F</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+      <div class="f4-step">
+        <div class="f4-letter">F</div>
+        <div class="f4-word">Feel</div>
+        <div class="f4-desc">Capisci come si sente: "Capisco come ti senti..."</div>
+      </div>
+      <div class="f4-step">
+        <div class="f4-letter">F</div>
+        <div class="f4-word">Felt</div>
+        <div class="f4-desc">Condividi: "Anche io la pensavo così..."</div>
+      </div>
+      <div class="f4-step">
+        <div class="f4-letter">F</div>
+        <div class="f4-word">Found</div>
+        <div class="f4-desc">Racconta cosa hai trovato: "Poi ho scoperto che..."</div>
+      </div>
+      <div class="f4-step">
+        <div class="f4-letter">F</div>
+        <div class="f4-word">Flow</div>
+        <div class="f4-desc">Chiudi con una domanda aperta che fa riflettere</div>
+      </div>
+    </div>
+    <div class="info-card success" style="margin-top:1rem;">
+      <div style="font-size:.9rem;color:#2d5a3d;line-height:1.7;"><strong>La domanda magica:</strong> "Posso chiederti come mai pensi [obiezione]?" — Entra in empatia e scopri la vera paura, così puoi essere molto più efficace nel rispondere.</div>
+    </div>
+  </div>
+
+  <!-- OBIEZIONI ACCORDION -->
+  <div style="display:flex;flex-direction:column;gap:.7rem;">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      ⏰ "Non ho tempo" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Ti capisco, il tempo è prezioso per tutti. Proprio per questo il progetto è pensato per essere gestibile: si può partire anche con poco tempo senza stravolgere la tua routine. Ha senso per te approfondire come incastrarlo nei tuoi impegni, invece di escludere l'opportunità a priori?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj1" style="display:none;">Ti capisco, il tempo è prezioso per tutti. Proprio per questo il progetto è pensato per essere gestibile: si può partire anche con poco tempo senza stravolgere la tua routine. Ha senso per te approfondire come incastrarlo nei tuoi impegni, invece di escludere l'opportunità a priori?</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      🤔 "È network marketing?" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Esatto, utilizziamo l'evoluzione di quel sistema — che noi chiamiamo Softmarketing. Abbiamo scelto questo nome perché mettiamo al centro le esigenze della persona, senza strategie aggressive. Siamo guidati da veri professionisti e ti assicuro che nel nostro progetto troverai qualcosa di nuovo: un metodo innovativo che garantisce risultati nei primi 30 giorni. Fidati, guarda la presentazione completa e poi mi dici cosa ne pensi. Facciamo così?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj2" style="display:none;">Esatto, utilizziamo l'evoluzione di quel sistema — che noi chiamiamo Softmarketing. Abbiamo scelto questo nome perché mettiamo al centro le esigenze della persona, senza strategie aggressive. Siamo guidati da veri professionisti e ti assicuro che nel nostro progetto troverai qualcosa di nuovo: un metodo innovativo che garantisce risultati nei primi 30 giorni. Fidati, guarda la presentazione completa e poi mi dici cosa ne pensi. Facciamo così?</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      💸 "Costa troppo" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Capisco, il prezzo è sempre una considerazione importante. Posso chiederti cosa intendi con 'troppo'? In che senso — rispetto al tuo budget attuale, o rispetto a quello che pensi di ottenere? Perché se ti spiego cosa ottieni in cambio, potrebbe cambiare la prospettiva. Posso mostrarti i numeri?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj3" style="display:none;">Capisco, il prezzo è sempre una considerazione importante. Posso chiederti cosa intendi con "troppo"? In che senso — rispetto al tuo budget attuale, o rispetto a quello che pensi di ottenere? Perché se ti spiego cosa ottieni in cambio, potrebbe cambiare la prospettiva. Posso mostrarti i numeri?</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      😟 "Non ho i contatti giusti" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Anche io la pensavo così all'inizio — e invece ho scoperto che i 'contatti giusti' non esistono. Non puoi sapere chi è interessato finché non glielo chiedi. Le persone più impensabili sono spesso quelle che acquistano di più. Il sistema ti dà tutti gli strumenti per arrivare a 100-200 persone anche se oggi ti sembrano poche. Vuoi scoprire come?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj4" style="display:none;">Anche io la pensavo così all'inizio — e invece ho scoperto che i "contatti giusti" non esistono. Non puoi sapere chi è interessato finché non glielo chiedi. Le persone più impensabili sono spesso quelle che acquistano di più. Il sistema ti dà tutti gli strumenti per arrivare a 100-200 persone anche se oggi ti sembrano poche. Vuoi scoprire come?</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      🤷 "Devo pensarci" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Certo, è giusto rifletterci. Posso chiederti su cosa in particolare vorresti pensare? A volte c'è un dubbio specifico sotto a quella frase — se me lo dici, posso darti le informazioni giuste e la riflessione diventa molto più facile."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj5" style="display:none;">Certo, è giusto rifletterci. Posso chiederti su cosa in particolare vorresti pensare? A volte c'è un dubbio specifico sotto a quella frase — se me lo dici, posso darti le informazioni giuste e la riflessione diventa molto più facile.</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      😨 "Ho paura del giudizio degli altri" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Ti capisco, ci sono passata/o anch'io. Ma ti dico una cosa: il parere degli altri è passeggero. I risultati che costruirai oggi saranno la tua realtà di domani. E sai cosa? Le stesse persone che oggi ti giudicano, domani ti chiederanno come hai fatto."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj6" style="display:none;">Ti capisco, ci sono passata/o anch'io. Ma ti dico una cosa: il parere degli altri è passeggero. I risultati che costruirai oggi saranno la tua realtà di domani. E sai cosa? Le stesse persone che oggi ti giudicano, domani ti chiederanno come hai fatto.</textarea>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      😓 "Non sono capace / non so vendere" <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Perfetto — questo sistema è fatto apposta per persone che non sanno vendere. Non dovrai vendere: seguirai un metodo già pronto, passo dopo passo. Lo sponsor è lì per te finché impari. E ricorda: il successo non dipende da quanto sei bravo a parlare, ma da quanto sei fedele al sistema."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia risposta</button>
+      <textarea id="obj7" style="display:none;">Perfetto — questo sistema è fatto apposta per persone che non sanno vendere. Non dovrai vendere: seguirai un metodo già pronto, passo dopo passo. Lo sponsor è lì per te finché impari. E ricorda: il successo non dipende da quanto sei bravo a parlare, ma da quanto sei fedele al sistema.</textarea>
+    </div>
+  </div>
+</div>
+
+<!-- S8: SOCIAL MEDIA -->
+<div class="section-card fade-in" id="s8">
+  <h2 class="section-title">📸 Social Media — I 5 Blocchi di Stories</h2>
+  <p class="section-subtitle">Quando finisci la lista nomi iniziale, i social diventano la tua fonte continua di nuovi contatti. Ecco come trasformare il tuo profilo in uno strumento che lavora per te.</p>
+
+  <div style="margin-bottom:2rem;">
+    <h3 style="font-size:1.1rem;margin-bottom:1rem;color:#1A1A2E;">Prima di tutto: il tuo profilo</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+      <div class="info-card" style="border-left:4px solid #1d4ed8;">
+        <div style="font-weight:700;color:#1d4ed8;margin-bottom:.4rem;">📷 Foto profilo</div>
+        <div style="font-size:.88rem;color:#4a5568;">Professionale, sorridente, buona luce. Non selfie sfocati.</div>
+      </div>
+      <div class="info-card" style="border-left:4px solid #7c3aed;">
+        <div style="font-weight:700;color:#7c3aed;margin-bottom:.4rem;">📝 Bio</div>
+        <div style="font-size:.88rem;color:#4a5568;">Indica cosa fai in modo chiaro e positivo. Nessun gergo tecnico.</div>
+      </div>
+      <div class="info-card" style="border-left:4px solid #E94560;">
+        <div style="font-weight:700;color:#E94560;margin-bottom:.4rem;">➕ Seguaci</div>
+        <div style="font-size:.88rem;color:#4a5568;">Aggiungi persone nuove ogni giorno per aumentare le visualizzazioni.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALENDARIO SETTIMANALE -->
+  <div style="margin-bottom:2rem;">
+    <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">📅 Piano editoriale settimanale</h3>
+    <div class="week-grid">
+      <div class="week-day prodotto"><div class="day-name">LUN</div>🍃 Dimagrimento</div>
+      <div class="week-day business"><div class="day-name">MAR</div>💼 Business</div>
+      <div class="week-day prodotto"><div class="day-name">MER</div>💇 Capelli</div>
+      <div class="week-day business"><div class="day-name">GIO</div>🏆 Qualifiche</div>
+      <div class="week-day prodotto"><div class="day-name">VEN</div>✨ Pelle</div>
+      <div class="week-day rest"><div class="day-name">SAB</div>🌟 Lifestyle</div>
+      <div class="week-day rest"><div class="day-name">DOM</div>😴 Riposo</div>
+    </div>
+    <div style="display:flex;gap:1rem;margin-top:.8rem;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:.8rem;"><div style="width:14px;height:14px;background:#eff6ff;border:2px solid #1d4ed8;border-radius:3px;"></div><span>5 Stories Prodotto</span></div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:.8rem;"><div style="width:14px;height:14px;background:#f0fdf4;border:2px solid #1A7A4A;border-radius:3px;"></div><span>5 Stories Business + Post/Reel</span></div>
+    </div>
+  </div>
+
+  <!-- 5 BLOCCHI -->
+  <div style="margin-bottom:2rem;">
+    <h3 style="font-size:1.1rem;margin-bottom:1rem;color:#1A1A2E;">🧱 La struttura dei 5 Blocchi</h3>
+    <div style="display:flex;flex-direction:column;gap:.6rem;">
+      <div style="display:flex;gap:1rem;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+        <div style="width:36px;height:36px;background:#E94560;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;">1</div>
+        <div><div style="font-weight:700;color:#1A1A2E;">🎣 Il Gancio</div><div style="font-size:.85rem;color:#5a6070;">Inizia con un problema reale del tuo target. Es: "Hai sempre sonno anche dopo una notte intera?" oppure "Capelli che cadono in quantità?"</div></div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+        <div style="width:36px;height:36px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;">2</div>
+        <div><div style="font-weight:700;color:#1A1A2E;">📸 Testimonianza visiva</div><div style="font-size:.85rem;color:#5a6070;">Una foto o video "Prima e Dopo" reale. Mostra il risultato — vale più di mille parole.</div></div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+        <div style="width:36px;height:36px;background:#1d4ed8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;">3</div>
+        <div><div style="font-weight:700;color:#1A1A2E;">💬 Testimonianza scritta</div><div style="font-size:.85rem;color:#5a6070;">Uno screenshot di un messaggio di un cliente soddisfatto. Rinforza la credibilità.</div></div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+        <div style="width:36px;height:36px;background:#1A7A4A;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;">4</div>
+        <div><div style="font-weight:700;color:#1A1A2E;">✅ I benefici</div><div style="font-size:.85rem;color:#5a6070;">Spiega chiaramente come il prodotto risolve il problema del Blocco 1. Semplice, diretto.</div></div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+        <div style="width:36px;height:36px;background:#C47A00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0;">5</div>
+        <div><div style="font-weight:700;color:#1A1A2E;">🚀 CTA + Social Proof</div><div style="font-size:.85rem;color:#5a6070;">Chiudi con una call to action (sondaggio, "scrivimi in DM") + prova sociale ("anche 12 persone questa settimana hanno iniziato").</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DM SCRIPTS -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">💌 Script per i messaggi privati (DM)</h3>
+  <div style="display:flex;flex-direction:column;gap:.7rem;">
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      👁️ Per chi guarda le tue Stories (anche senza reagire) <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Ciaoooo [Nome] come stai? Ho visto che hai dato un'occhiata alla mia ultima storia... ho deciso di premiare le persone che mi seguono. Il giorno [Data] farò un evento online con promozioni speciali e premi ad estrazione. Tu hai impegni per quel giorno?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+      <textarea id="dm1" style="display:none;">Ciaoooo [Nome] come stai? Ho visto che hai dato un'occhiata alla mia ultima storia... ho deciso di premiare le persone che mi seguono. Il giorno [Data] farò un evento online con promozioni speciali e premi ad estrazione. Tu hai impegni per quel giorno?</textarea>
+    </div>
+    <button class="accordion-btn" onclick="toggleAcc(this)">
+      🆕 Per i nuovi follower <span class="arrow">▼</span>
+    </button>
+    <div class="accordion-content">
+      <div class="script-box">"Ciao [Nome], grazie per il follow! Ho visto che ti interessa l'argomento — posso chiederti qual è il tuo obiettivo principale in questo momento? Sto aiutando alcune persone a [beneficio principale] e mi farebbe piacere capire se posso esserti utile."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia script</button>
+      <textarea id="dm2" style="display:none;">Ciao [Nome], grazie per il follow! Ho visto che ti interessa l'argomento — posso chiederti qual è il tuo obiettivo principale in questo momento? Sto aiutando alcune persone e mi farebbe piacere capire se posso esserti utile.</textarea>
+    </div>
+  </div>
+</div>
+
+<!-- S9: STRUMENTI -->
+<div class="section-card fade-in" id="s9">
+  <h2 class="section-title">🔧 I Tuoi Strumenti Digitali</h2>
+  <p class="section-subtitle">Non sei da solo/a. Hai un sistema digitale che ti supporta h24.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem;">
+    <div class="tool-card">
+      <div class="tool-icon">🤖</div>
+      <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:.4rem;">Assistente Virtuale AI</div>
+      <div style="font-size:.88rem;color:#4a5568;line-height:1.6;margin-bottom:.8rem;">Risponde h24 a qualsiasi domanda: prezzi, prodotti, piano guadagni, obiezioni. È disponibile sul nostro sito e conosce tutto il materiale ufficiale.</div>
+      <div style="font-size:.82rem;color:#1A7A4A;font-weight:600;margin-bottom:.5rem;">Quando lo usi:</div>
+      <div style="font-size:.82rem;color:#4a5568;">Ogni volta che hai un dubbio tecnico, di notte, nel weekend, quando non riesci a raggiungere il tuo sponsor.</div>
+      <div style="margin-top:1rem;background:#f0fdf4;border-radius:8px;padding:.7rem;font-size:.82rem;color:#2d5a3d;font-style:italic;">"Quanto guadagno se ho 3 persone con 500 punti?" — chiedi direttamente al chatbot.</div>
+    </div>
+
+    <div class="tool-card coming">
+      <div class="tool-icon">📋</div>
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;">
+        <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;">La Tua Piattaforma Personale</div>
+        <span class="badge badge-coming">🔜 In arrivo</span>
+      </div>
+      <div style="font-size:.88rem;color:#4a5568;line-height:1.6;margin-bottom:.8rem;">Stiamo costruendo qualcosa di speciale per te. Potrai organizzare tutti i tuoi contatti, vedere a che punto sei con ogni persona e ricevere reminder automatici sul follow-up.</div>
+      <div style="background:#fef9c3;border-radius:8px;padding:.8rem;font-size:.85rem;color:#713f12;line-height:1.5;">🚧 Già in sviluppo. Ti avviseremo appena sarà pronta — e sarà un bel salto in avanti nel tuo lavoro quotidiano.</div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">🎥</div>
+      <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:.4rem;">Zoom — La Sala dell'Inaugurazione</div>
+      <div style="font-size:.88rem;color:#4a5568;line-height:1.6;margin-bottom:.8rem;">La nostra sala riunioni online. Qui si svolge l'Inaugurazione e le call di approfondimento business.</div>
+      <div style="font-size:.82rem;color:#1A7A4A;font-weight:600;margin-bottom:.5rem;">Cosa fare prima dell'evento:</div>
+      <div style="font-size:.82rem;color:#4a5568;line-height:1.6;">✓ Prova la condivisione schermo<br>✓ Verifica audio e video<br>✓ Entra 15 minuti prima<br>✓ Manda il link 10 min prima</div>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-icon">💬</div>
+      <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:.4rem;">Telegram — Il Cuore del Team</div>
+      <div style="font-size:.88rem;color:#4a5568;line-height:1.6;margin-bottom:.8rem;">Il canale dove vive il team. Aggiornamenti, materiali, celebrazioni, domande.</div>
+      <div style="font-size:.82rem;color:#1A7A4A;font-weight:600;margin-bottom:.5rem;">Cosa trovi:</div>
+      <div style="font-size:.82rem;color:#4a5568;line-height:1.6;">✓ Annunci importanti<br>✓ Risposte dai tuoi leader<br>✓ Materiali aggiornati<br>✓ Celebrazioni dei risultati</div>
+    </div>
+  </div>
+</div>
+
+<!-- S10: ESERCITAZIONE -->
+<div class="section-card fade-in" id="s10">
+  <h2 class="section-title">🎙️ Esercitazione con l'Assistente AI</h2>
+  <p class="section-subtitle">Prima di parlare con persone vere, allenati qui. Ogni esercizio fatto con il chatbot vale 10 conversazioni improvvisate.</p>
+
+  <div class="mic-box" style="margin-bottom:2rem;">
+    <div style="font-size:2rem;margin-bottom:.5rem;">🎙️</div>
+    <div style="font-weight:700;font-size:1.1rem;color:#ff8c69;margin-bottom:.5rem;">Usa la voce, non la tastiera</div>
+    <p style="color:#cbd5e0;font-size:.92rem;line-height:1.7;margin:0;">Nella realtà parlerai sempre — al telefono, in audio WhatsApp, in Zoom. Esercitarti per iscritto è utile, ma <strong style="color:#fff;">non allena la cosa più importante</strong>: la tua voce, il tuo tono, la tua sicurezza. Attiva il microfono nel chatbot, parla ad alta voce come se fosse davvero la persona che hai davanti, e poi chiedi un feedback. Sentirai subito la differenza.</p>
+  </div>
+
+  <div style="margin-bottom:1.5rem;background:#f8f9fa;border-radius:12px;padding:1.2rem;">
+    <div style="font-weight:700;margin-bottom:.8rem;color:#1A1A2E;">📋 Come fare un esercizio</div>
+    <div class="step-flow">
+      <div class="step-pill" style="font-size:.82rem;">1. Copia il prompt</div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill" style="font-size:.82rem;">2. Apri il chatbot</div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill" style="font-size:.82rem;">3. Attiva 🎙️</div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill" style="font-size:.82rem;">4. Parla come fosse vero</div>
+      <div class="step-arrow">→</div>
+      <div class="step-pill" style="background:#E94560;font-size:.82rem;">5. Chiedi feedback</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A1A2E;margin-bottom:.5rem;">📞 Esercizio 1 — Invito telefonico</div>
+      <div style="font-size:.88rem;color:#5a6070;margin-bottom:.8rem;">Simula la telefonata di invito all'inaugurazione</div>
+      <div class="script-box" style="font-size:.85rem;">"Fai la parte di un mio amico che non sa ancora cosa faccio. Io ti invito all'inaugurazione. Rispondimi come una persona vera — con dubbi, domande, o entusiasmo — e poi dimmi come ho fatto e cosa posso migliorare."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia prompt</button>
+      <textarea id="ex1" style="display:none;">Fai la parte di un mio amico che non sa ancora cosa faccio. Io ti invito all'inaugurazione. Rispondimi come una persona vera — con dubbi, domande, o entusiasmo — e poi dimmi come ho fatto e cosa posso migliorare.</textarea>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A1A2E;margin-bottom:.5rem;">⏰ Esercizio 2 — Obiezione "non ho tempo"</div>
+      <div style="font-size:.88rem;color:#5a6070;margin-bottom:.8rem;">Impara a rispondere a questa obiezione comune</div>
+      <div class="script-box" style="font-size:.85rem;">"Simula una persona che mi dice 'non ho tempo per questo'. Rispondimi come quella persona e poi valuta come ho gestito l'obiezione — dimmi se sono stato/a convincente e cosa avrei potuto dire meglio."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia prompt</button>
+      <textarea id="ex2" style="display:none;">Simula una persona che mi dice "non ho tempo per questo". Rispondimi come quella persona e poi valuta come ho gestito l'obiezione — dimmi se sono stato/a convincente e cosa avrei potuto dire meglio.</textarea>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A1A2E;margin-bottom:.5rem;">🎯 Esercizio 3 — Follow-up prodotto (ha scritto 1)</div>
+      <div style="font-size:.88rem;color:#5a6070;margin-bottom:.8rem;">Pratica il contatto post-inaugurazione per chi era interessato ai prodotti</div>
+      <div class="script-box" style="font-size:.85rem;">"Sei una persona che ha partecipato alla mia inaugurazione e ha scritto 1 in chat (interessata ai prodotti). Aspetta il mio follow-up e poi dimmi se il mio messaggio era corretto e professionale — dimmi anche cosa ti ha convinto o non convinto."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia prompt</button>
+      <textarea id="ex3" style="display:none;">Sei una persona che ha partecipato alla mia inaugurazione e ha scritto 1 in chat (interessata ai prodotti). Aspetta il mio follow-up e poi dimmi se il mio messaggio era corretto e professionale — dimmi anche cosa ti ha convinto o non convinto.</textarea>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A1A2E;margin-bottom:.5rem;">💼 Esercizio 4 — Follow-up business (ha scritto 2)</div>
+      <div style="font-size:.88rem;color:#5a6070;margin-bottom:.8rem;">Pratica come fissare la call a tre con lo sponsor</div>
+      <div class="script-box" style="font-size:.85rem;">"Sei qualcuno interessato al business — hai scritto 2 in chat. Aspetta che ti contatti per fissare la call a tre con il mio sponsor. Valuta il mio approccio e dimmi se la call è stata fissata nel modo giusto."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia prompt</button>
+      <textarea id="ex4" style="display:none;">Sei qualcuno interessato al business — hai scritto 2 in chat. Aspetta che ti contatti per fissare la call a tre con il mio sponsor. Valuta il mio approccio e dimmi se la call è stata fissata nel modo giusto.</textarea>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A1A2E;margin-bottom:.5rem;">🤔 Esercizio 5 — Obiezione "è network marketing?"</div>
+      <div style="font-size:.88rem;color:#5a6070;margin-bottom:.8rem;">Una delle obiezioni più comuni — impara a risponderle con naturalezza</div>
+      <div class="script-box" style="font-size:.85rem;">"Simula qualcuno che mi dice 'ma non è mica network marketing?' come obiezione reale, con un tono leggermente scettico. Poi valuta come rispondo — sono stato/a convincente? Ho usato il tono giusto?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia prompt</button>
+      <textarea id="ex5" style="display:none;">Simula qualcuno che mi dice "ma non è mica network marketing?" come obiezione reale, con un tono leggermente scettico. Poi valuta come rispondo — sono stato/a convincente? Ho usato il tono giusto?</textarea>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A1A2E;margin-bottom:.5rem;">💇 Esercizio 6 — Consulenza prodotto (chiusura)</div>
+      <div style="font-size:.88mm;color:#5a6070;margin-bottom:.8rem;">Simula una consulenza su un prodotto specifico e pratica la chiusura</div>
+      <div class="script-box" style="font-size:.85rem;">"Sei una cliente interessata ai prodotti per i capelli. Ho già fatto il follow-up, ora voglio guidarti alla scelta del prodotto giusto per te. Simula la conversazione e dimmi se ho fatto le domande giuste, se ho consigliato bene e se la consulenza ti ha convinto."</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick=\"copyText('\1',this)\">📋 Copia prompt</button>
+      <textarea id="ex6" style="display:none;">Sei una cliente interessata ai prodotti per i capelli. Ho già fatto il follow-up, ora voglio guidarti alla scelta del prodotto giusto per te. Simula la conversazione e dimmi se ho fatto le domande giuste, se ho consigliato bene e se la consulenza ti ha convinto.</textarea>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem;background:#1A1A2E;color:#fff;border-radius:14px;padding:1.5rem;text-align:center;">
+    <div style="font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:800;color:#E94560;margin-bottom:.5rem;">I professionisti si allenano.</div>
+    <div style="color:#a0aec0;font-size:.92rem;">I dilettanti improvvisano. Ogni sessione di esercizio ti avvicina alla versione di te che ottiene risultati.</div>
+  </div>
+</div>
+
+<!-- S11: PROSSIMI PASSI -->
+<div class="section-card fade-in" id="s11">
+  <h2 class="section-title">🏁 Prossimi Passi</h2>
+  <p class="section-subtitle">Hai tutto quello che ti serve. Adesso è il momento di agire.</p>
+
+  <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem;">
+    <div style="background:#f0fdf4;border:2px solid #1A7A4A;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1A7A4A;margin-bottom:.5rem;">✅ Azione immediata — Fai ora</div>
+      <ol style="padding-left:1.3rem;color:#2d5a3d;font-size:.92rem;line-height:2;">
+        <li>Parla con il tuo sponsor e fissa la data dell'Inaugurazione</li>
+        <li>Inizia la Lista Nomi — punta a 100 nomi entro oggi</li>
+        <li>Prepara la tua locandina su Canva</li>
+      </ol>
+    </div>
+    <div style="background:#eff6ff;border:2px solid #1d4ed8;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:.5rem;">🔵 Nei prossimi giorni</div>
+      <ol style="padding-left:1.3rem;color:#1e3a8a;font-size:.92rem;line-height:2;">
+        <li>Invita tutta la lista (30 telefonate + 70 audio)</li>
+        <li>Prepara la ruota della fortuna con i confermati</li>
+        <li>Allenati con l'Assistente AI prima dell'evento</li>
+      </ol>
+    </div>
+    <div style="background:#fff5f7;border:2px solid #E94560;border-radius:12px;padding:1.2rem;">
+      <div style="font-weight:700;color:#E94560;margin-bottom:.5rem;">🔴 Dopo il Grande Giorno</div>
+      <ol style="padding-left:1.3rem;color:#7a0020;font-size:.92rem;line-height:2;">
+        <li>Follow-up entro 24 ore — ogni ora conta</li>
+        <li>Chiudi con lo sponsor per i contatti "business"</li>
+        <li>Inizia il piano social con i 5 Blocchi di Stories</li>
+      </ol>
+    </div>
+  </div>
+
+  <div style="background:linear-gradient(135deg,#1A1A2E,#16213E);border-radius:16px;padding:2rem;text-align:center;color:#fff;">
+    <div style="font-size:2rem;margin-bottom:.5rem;">🚀</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:.5rem;">Hai completato il manuale!</div>
+    <div style="color:#a0aec0;font-size:.92rem;margin-bottom:1.5rem;">Adesso hai tutto quello che serve per iniziare. Il tuo sponsor è qui per te — non esitare a chiedere.</div>
+    <div style="background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.3);border-radius:10px;padding:1rem;display:inline-block;">
+      <div style="color:#ff8c69;font-weight:700;font-size:.9rem;">Il tuo Team Leader di riferimento</div>
+      <div style="color:#fff;margin-top:.3rem;font-size:.88rem;">Contattalo/a su Telegram o chiamalo/a direttamente.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="margin-top:1rem;padding:1.5rem 2rem;background:#1A1A2E;border-radius:16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
+  <div style="color:#a0aec0;font-size:.82rem;">© BlooMIND — Documento riservato ai collaboratori autorizzati.</div>
+  <div style="background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.3);border-radius:8px;padding:.5rem 1rem;font-size:.8rem;color:#E94560;font-weight:700;">🔒 Vietata la distribuzione a terzi non autorizzati</div>
+</div>
+
+</div><!-- /main -->
+
+<!-- FONT CONTROL -->
+<div id="font-ctrl">
+  <div class="fc-label">Testo</div>
+  <button class="fc-btn" onclick="changeFont(1)" title="Aumenta testo">A+</button>
+  <button class="fc-btn" onclick="changeFont(0)" title="Dimensione normale" style="font-size:.8rem;">A</button>
+  <button class="fc-btn" onclick="changeFont(-1)" title="Riduci testo">A−</button>
+</div>
+
+<!-- BACK TO TOP -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Torna su">↑</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button onclick="closeModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#5a6070;">✕</button>
+    <h3 id="modal-title"></h3>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// SIDEBAR SCROLL SPY
+const sections = ['s0','s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+const navItems = document.querySelectorAll('.nav-item');
+
+function navTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const offset = 20;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({top: top, behavior: 'smooth'});
+  }
+  if (window.innerWidth <= 768) toggleSidebar(false);
+  return false;
+}
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.pageYOffset;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = Math.round((scrollY / docH) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = pct + '% completato';
+
+  // Active nav
+  let current = 's0';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 80) current = id;
+  });
+  navItems.forEach((item, i) => {
+    item.classList.toggle('active', sections[i] === current);
+  });
+
+  // Back to top
+  document.getElementById('back-top').classList.toggle('show', scrollY > 400);
+
+  // Fade in
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(el => {
+    if (el.getBoundingClientRect().top < window.innerHeight - 60) el.classList.add('visible');
+  });
+});
+
+// MOBILE SIDEBAR
+function toggleSidebar(forceClose) {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('mob-overlay');
+  const open = forceClose === false ? false : !sb.classList.contains('open');
+  sb.classList.toggle('open', open);
+  ov.classList.toggle('show', open);
+}
+
+// ACCORDION
+function toggleAcc(btn) {
+  const content = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  content.classList.toggle('open', !wasOpen);
+}
+
+// TABS
+function openTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// TOGGLE SCRIPT
+function toggleScript(type) {
+  const caldo = document.getElementById('script-caldo');
+  const tiepido = document.getElementById('script-tiepido');
+  const bc = document.getElementById('tog-caldo');
+  const bt = document.getElementById('tog-tiepido');
+  if (type === 'caldo') {
+    caldo.style.display = 'block'; tiepido.style.display = 'none';
+    bc.classList.add('active'); bt.classList.remove('active');
+  } else {
+    tiepido.style.display = 'block'; caldo.style.display = 'none';
+    bt.classList.add('active'); bc.classList.remove('active');
+  }
+}
+
+// COPY
+function copyText(id, btn) {
+  if (!btn) btn = event && (event.currentTarget || event.target);
+  const el = document.getElementById(id);
+  const text = el ? el.value : '';
+  const doFeedback = (b) => {
+    if (!b) return;
+    const orig = b.innerHTML;
+    b.innerHTML = '✓ Copiato!';
+    b.classList.add('copied');
+    setTimeout(() => { b.innerHTML = orig; b.classList.remove('copied'); }, 2000);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => doFeedback(btn));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    doFeedback(btn);
+  }
+}
+
+// CHECKLIST
+function saveChecks() {
+  const state = {};
+  for (let i=1; i<=8; i++) {
+    state['c'+i] = document.getElementById('c'+i).checked;
+  }
+  localStorage.setItem('bloomind_checklist', JSON.stringify(state));
+}
+function loadChecks() {
+  const saved = localStorage.getItem('bloomind_checklist');
+  if (saved) {
+    const state = JSON.parse(saved);
+    for (let i=1; i<=8; i++) {
+      const el = document.getElementById('c'+i);
+      if (el) el.checked = state['c'+i] || false;
+    }
+  }
+}
+function resetChecks() {
+  for (let i=1; i<=8; i++) {
+    const el = document.getElementById('c'+i);
+    if (el) el.checked = false;
+  }
+  localStorage.removeItem('bloomind_checklist');
+}
+
+// SLIDER CALCOLATORE
+function calcResult(val) {
+  val = parseInt(val);
+  document.getElementById('slider-val').textContent = val;
+  const conferme = Math.round(val * 0.35);
+  const presenti = Math.round(val * 0.22);
+  const guadagno = presenti * 17;
+  document.getElementById('res-conferme').textContent = conferme;
+  document.getElementById('res-presenti').textContent = presenti;
+  document.getElementById('res-guadagno').textContent = guadagno + '€';
+}
+
+// FONT CONTROL
+const fontSizes = [16, 18, 22];
+let currentFS = 1;
+function changeFont(dir) {
+  if (dir === 0) currentFS = 1;
+  else currentFS = Math.max(0, Math.min(2, currentFS + dir));
+  document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  localStorage.setItem('bloomind_fs', currentFS);
+}
+(function loadFS() {
+  const saved = localStorage.getItem('bloomind_fs');
+  if (saved !== null) {
+    currentFS = parseInt(saved);
+    document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  }
+})();
+
+// COUNTER ANIMATION
+function animateCounter(id, target, suffix) {
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const el = document.getElementById(id);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current + (suffix || '');
+    if (current >= target) clearInterval(timer);
+  }, 30);
+}
+const heroObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter('cnt1', 20, '€');
+      animateCounter('cnt2', 80, '%');
+      animateCounter('cnt3', 7, '');
+      heroObserver.disconnect();
+    }
+  });
+}, {threshold: 0.3});
+heroObserver.observe(document.getElementById('s0'));
+
+// MODAL
+function openModal(title, body) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// INIT
+loadChecks();
+document.querySelectorAll('.fade-in').forEach(el => {
+  if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+});
+</script>
+</body>
+</html>
