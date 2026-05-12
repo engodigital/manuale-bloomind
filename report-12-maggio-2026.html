@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlooMIND — Riepilogo Consulenza 12 Maggio 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1A1A2E;
+    --accent: #E94560;
+    --success: #1A7A4A;
+    --warning: #C47A00;
+    --blue: #1d4ed8;
+    --bg: #f5f5f7;
+    --card: #fff;
+    --border: #e2e8f0;
+    --text: #1A1A2E;
+    --muted: #5a6070;
+    --secondary: #16213E;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--bg); }
+  h1,h2,h3 { font-family: 'Poppins', sans-serif; }
+
+  /* HEADER HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, #0f3460 100%);
+    color: #fff;
+    padding: 3rem 1.5rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    background: rgba(233,69,96,.15);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -40px;
+    width: 180px; height: 180px;
+    background: rgba(233,69,96,.08);
+    border-radius: 50%;
+  }
+  .hero-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(233,69,96,.25);
+    border: 1px solid rgba(233,69,96,.5);
+    color: #fca5a5;
+    padding: .3rem .9rem;
+    border-radius: 30px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .hero h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 800; line-height: 1.2; }
+  .hero-date { margin-top: .5rem; font-size: .95rem; color: rgba(255,255,255,.7); }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.5rem; }
+  .hero-tag {
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 20px;
+    padding: .25rem .8rem;
+    font-size: .8rem;
+    color: rgba(255,255,255,.85);
+  }
+
+  /* LAYOUT */
+  .container { max-width: 760px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+
+  /* SECTION */
+  .section-label {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: .5rem;
+  }
+  .section-title { font-size: 1.4rem; color: var(--primary); margin-bottom: 1.5rem; }
+
+  /* DECISIONI */
+  .decisions-grid { display: grid; gap: 1rem; }
+  .decision-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+  }
+  .decision-num {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 800;
+    font-size: .9rem;
+    flex-shrink: 0;
+  }
+  .decision-body strong { display: block; font-size: .95rem; color: var(--primary); margin-bottom: .3rem; }
+  .decision-body p { font-size: .88rem; color: var(--muted); line-height: 1.6; }
+
+  /* COMPITI ACCORDION */
+  .tasks-stack { display: flex; flex-direction: column; gap: 1rem; }
+
+  .task-card {
+    background: var(--card);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+  }
+  .task-header {
+    width: 100%;
+    text-align: left;
+    padding: 1.1rem 1.4rem;
+    background: var(--card);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .task-header:hover { background: #f8f9fa; }
+  .task-header.open { background: var(--primary); }
+
+  .task-header-left { display: flex; align-items: center; gap: .8rem; }
+  .task-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .task-name { font-family: 'Poppins', sans-serif; font-size: 1rem; font-weight: 700; color: var(--primary); }
+  .task-role { font-size: .78rem; color: var(--muted); margin-top: 1px; }
+  .task-header.open .task-name,
+  .task-header.open .task-role { color: #fff; }
+  .task-header.open .task-role { color: rgba(255,255,255,.7); }
+
+  .task-chevron { font-size: 1rem; color: var(--muted); transition: transform .25s; }
+  .task-header.open .task-chevron { transform: rotate(180deg); color: #fff; }
+
+  .task-body {
+    display: none;
+    padding: 1.2rem 1.4rem;
+    border-top: 1px solid var(--border);
+  }
+  .task-body.open { display: block; }
+
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .6rem 0;
+    border-bottom: 1px solid #f0f2f5;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-icon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+  .task-text { font-size: .9rem; line-height: 1.6; color: #2d3748; }
+  .task-text strong { color: var(--primary); }
+
+  /* Colori avatar per persona */
+  .avatar-marco { background: rgba(26,26,46,.12); }
+  .avatar-laura { background: rgba(233,69,96,.12); }
+  .avatar-manuela { background: rgba(26,122,74,.12); }
+  .avatar-annamaria { background: rgba(196,122,0,.12); }
+  .avatar-team { background: rgba(29,78,216,.12); }
+
+  /* FOOTER */
+  .footer-card {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    border-radius: 16px;
+    padding: 1.8rem;
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+  .footer-card p { font-size: .88rem; color: rgba(255,255,255,.7); margin-bottom: .4rem; }
+  .footer-card .appt {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 1.2rem;
+  }
+  .footer-card .appt span { color: var(--accent); }
+  .btn-manuale {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    padding: .7rem 1.4rem;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: .88rem;
+    transition: background .2s;
+  }
+  .btn-manuale:hover { background: #c73652; }
+
+  /* DIVIDER */
+  .section-divider { height: 1px; background: var(--border); margin: 2.5rem 0; }
+
+  /* BACK TO TOP */
+  #back-top {
+    position: fixed; bottom: 20px; right: 20px; z-index: 50;
+    width: 42px; height: 42px;
+    background: var(--accent);
+    color: #fff; border: none; border-radius: 10px;
+    font-size: 1.2rem; cursor: pointer;
+    display: none; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(233,69,96,.4);
+  }
+  #back-top.show { display: flex; }
+
+  /* RESPONSIVE */
+  @media (min-width: 600px) {
+    .hero { padding: 4rem 2rem 3rem; }
+    .container { padding: 2.5rem 1.5rem 4rem; }
+    .section-title { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📋 Riepilogo Sessione</div>
+    <h1>Consulenza BlooMIND<br>12 Maggio 2026</h1>
+    <div class="hero-date">🕐 Team Laura · Sessione #12 Maggio 2026</div>
+    <div class="hero-tags">
+      <span class="hero-tag">👤 Marco</span>
+      <span class="hero-tag">👤 Laura</span>
+      <span class="hero-tag">👤 Manuela</span>
+      <span class="hero-tag">👤 Anna Maria</span>
+      <span class="hero-tag">👥 Team Leader</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- DECISIONI STRATEGICHE -->
+  <div class="section-label">🎯 Decisioni prese oggi</div>
+  <h2 class="section-title">Riassunto Strategico</h2>
+
+  <div class="decisions-grid">
+
+    <div class="decision-card">
+      <div class="decision-num">1</div>
+      <div class="decision-body">
+        <strong>Manuale diviso in 5 macro-sezioni</strong>
+        <p>Il manuale non sarà un blocco unico ma 5 sezioni cliccabili: <strong>Startup → Inaugurazione → Contatti → Obiezioni → Duplicazione → Evoluzione/Academy</strong>. Ogni collaboratore naviga solo la fase in cui si trova.</p>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-num">2</div>
+      <div class="decision-body">
+        <strong>Sezione Obiezioni dedicata</strong>
+        <p>Tutte le obiezioni (prodotto + business) in un'unica sezione dopo <em>Contatti</em> e prima di <em>Duplicazione</em> — così il distributore le impara nel momento giusto, quando inizia le prime conversazioni reali.</p>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-num">3</div>
+      <div class="decision-body">
+        <strong>Landing page inaugurazioni con "Chi ti ha invitato?"</strong>
+        <p>Modulo di registrazione ospiti con campi: Nome, Cognome, Telefono, Email + campo <strong>"Chi ti ha invitato?"</strong>. Il sistema assegna automaticamente il lead al distributore corretto nel CRM — zero lavoro manuale.</p>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-num">4</div>
+      <div class="decision-body">
+        <strong>Nuovo dominio bloomind.pro</strong>
+        <p>Per ospitare landing page e email professionali senza "spoilerare" il brand DuoLife. Marco verificherà prezzi di rinnovo su Aruba, Register e GoDaddy (target: ≤ 15€/anno).</p>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-num">5</div>
+      <div class="decision-body">
+        <strong>Integrazione "33 Fonti di Contatti"</strong>
+        <p>Il documento con 33 strategie di acquisizione contatti (online e offline) verrà integrato nel manuale operativo — spunti pratici e immediati per chi non sa da dove iniziare.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- COMPITI -->
+  <div class="section-label">✅ Compiti assegnati</div>
+  <h2 class="section-title">Chi fa cosa</h2>
+
+  <div class="tasks-stack">
+
+    <!-- MARCO -->
+    <div class="task-card">
+      <button class="task-header" onclick="toggleTask(this)" aria-expanded="false">
+        <div class="task-header-left">
+          <div class="task-avatar avatar-marco">🧠</div>
+          <div>
+            <div class="task-name">Marco Marengo</div>
+            <div class="task-role">Consulente Strategico</div>
+          </div>
+        </div>
+        <span class="task-chevron">▼</span>
+      </button>
+      <div class="task-body">
+        <div class="task-item">
+          <span class="task-icon">📚</span>
+          <span class="task-text"><strong>Aggiornare il manuale</strong> — Integrare le 5 macro-sezioni + sezione Obiezioni usando gli script di Manuela e Anna Maria come fonte principale.</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">⚙️</span>
+          <span class="task-text"><strong>Configurare GHL</strong> — Creare il modulo cattura lead per le inaugurazioni e impostare i flussi automatici di assegnazione in base al campo "Chi ti ha invitato?".</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">🌐</span>
+          <span class="task-text"><strong>Verificare dominio bloomind.pro</strong> — Confrontare prezzi di rinnovo su Aruba, Register e GoDaddy. Obiettivo: ≤ 15€/anno.</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">🎓</span>
+          <span class="task-text"><strong>Avviare setup Academy</strong> — Predisporre l'area video su GHL che sostituirà gradualmente i topic di Telegram per la formazione interna.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAURA -->
+    <div class="task-card">
+      <button class="task-header" onclick="toggleTask(this)" aria-expanded="false">
+        <div class="task-header-left">
+          <div class="task-avatar avatar-laura">👑</div>
+          <div>
+            <div class="task-name">Laura Ruggieri</div>
+            <div class="task-role">Project Leader</div>
+          </div>
+        </div>
+        <span class="task-chevron">▼</span>
+      </button>
+      <div class="task-body">
+        <div class="task-item">
+          <span class="task-icon">🎙️</span>
+          <span class="task-text"><strong>Registrare 4–5 approfondimenti</strong> — Vocali o video delle tue chiusure reali (rinominarli con titolo + data). Serviranno a Marco per addestrare il chatbot AI al tuo metodo.</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">📝</span>
+          <span class="task-text"><strong>Revisionare la bozza manuale</strong> — Quando Marco invia la bozza aggiornata, revisionare 1 pagina assegnata verificando tono e coerenza delle istruzioni.</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">🎯</span>
+          <span class="task-text"><strong>Rispondere alle domande Buyer Persona</strong> — Via vocale, non urgente. Domande:
+            <ul style="margin-top:.5rem;margin-left:1rem;line-height:2;font-size:.88rem;color:#5a6070;">
+              <li>📖 Racconta la tua storia</li>
+              <li>🌐 URL siti web e funnel</li>
+              <li>📲 Social media</li>
+              <li>💎 Proposta unica di valore (cosa ti rende unica)</li>
+              <li>🏆 Perché dovrebbero scegliere te?</li>
+              <li>📊 Attuale strategia di marketing</li>
+              <li>🛍️ Obiettivi di marketing (concreti e numerici)</li>
+              <li>💰 Attuale offerta di vendita</li>
+            </ul>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANUELA -->
+    <div class="task-card">
+      <button class="task-header" onclick="toggleTask(this)" aria-expanded="false">
+        <div class="task-header-left">
+          <div class="task-avatar avatar-manuela">🌿</div>
+          <div>
+            <div class="task-name">Manuela Spiezio</div>
+            <div class="task-role">Leadership Operativa</div>
+          </div>
+        </div>
+        <span class="task-chevron">▼</span>
+      </button>
+      <div class="task-body">
+        <div class="task-item">
+          <span class="task-icon">📬</span>
+          <span class="task-text"><strong>Definire le notifiche POST-inaugurazione</strong> — Specificare nel dettaglio cosa deve ricevere il <strong>distributore</strong> e cosa lo <strong>sponsor</strong> nella fase di follow-up dopo la serata. Questi messaggi verranno automatizzati in GHL.</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">📝</span>
+          <span class="task-text"><strong>Revisionare 1 pagina del manuale aggiornato</strong> — Quando Marco invia la bozza, ogni leader prende in carico una pagina per velocizzare la revisione collettiva.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANNA MARIA -->
+    <div class="task-card">
+      <button class="task-header" onclick="toggleTask(this)" aria-expanded="false">
+        <div class="task-header-left">
+          <div class="task-avatar avatar-annamaria">⭐</div>
+          <div>
+            <div class="task-name">Anna Maria Ciccone</div>
+            <div class="task-role">Leadership Operativa</div>
+          </div>
+        </div>
+        <span class="task-chevron">▼</span>
+      </button>
+      <div class="task-body">
+        <div class="task-item">
+          <span class="task-icon">🗓️</span>
+          <span class="task-text"><strong>Definire le notifiche PRE-inaugurazione</strong> — Specificare nel dettaglio le azioni e i messaggi automatici da inviare <strong>prima</strong> della serata (preparazione distributore, promemoria, istruzioni ospiti).</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">📝</span>
+          <span class="task-text"><strong>Revisionare 1 pagina del manuale aggiornato</strong> — Stessa divisione concordata con Manuela: ogni leader si occupa di una pagina specifica.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM LEADER / DISTRIBUTORI -->
+    <div class="task-card">
+      <button class="task-header" onclick="toggleTask(this)" aria-expanded="false">
+        <div class="task-header-left">
+          <div class="task-avatar avatar-team">👥</div>
+          <div>
+            <div class="task-name">Team Leader &amp; Distributori</div>
+            <div class="task-role">Tutta la rete</div>
+          </div>
+        </div>
+        <span class="task-chevron">▼</span>
+      </button>
+      <div class="task-body">
+        <div class="task-item">
+          <span class="task-icon">📋</span>
+          <span class="task-text"><strong>Modulo dati obbligatorio</strong> — Ogni nuovo collaboratore deve compilare il modulo con: Nome, Cognome, Email, Cellulare, Sponsor e Raccomandante. È il passaggio obbligatorio per ricevere accesso alla piattaforma BlooMIND e al chatbot.</span>
+        </div>
+        <div class="task-item">
+          <span class="task-icon">📞</span>
+          <span class="task-text"><strong>Raccogliere dati ospiti inaugurazioni</strong> — Anche in modo manuale, finché il modulo non è attivo: raccogliere almeno nome + chi li ha invitati. I contatti si perdono senza un raccoglitore.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-card">
+    <p>Prossimo appuntamento</p>
+    <div class="appt">Giovedì <span>15 Maggio 2026</span> · ore 11:00</div>
+    <a class="btn-manuale" href="https://engodigital.github.io/manuale-bloomind/manuale-collaboratore-v2.html" target="_blank" rel="noopener">
+      📖 Apri Manuale Collaboratore
+    </a>
+  </div>
+
+</div>
+
+<!-- BACK TO TOP -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Torna su">↑</button>
+
+<script>
+  function toggleTask(btn) {
+    const body = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    body.classList.toggle('open', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  }
+
+  window.addEventListener('scroll', function() {
+    const btn = document.getElementById('back-top');
+    if (window.scrollY > 300) btn.classList.add('show');
+    else btn.classList.remove('show');
+  });
+</script>
+</body>
+</html>
