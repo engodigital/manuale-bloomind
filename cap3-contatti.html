@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contatti — BlooMIND</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#1A1A2E',accent:'#E94560',secondary:'#16213E',success:'#1A7A4A',warning:'#C47A00'},fontFamily:{sans:['Inter','sans-serif'],heading:['Poppins','sans-serif']}}}}</script>
+<style>
+
+  :root { --fs: 18px; }
+  html { font-size: var(--fs); scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; color: #1A1A2E; background: #f5f5f7; }
+  h1,h2,h3,h4 { font-family: 'Poppins', sans-serif; }
+
+  /* SIDEBAR */
+  #sidebar { width: 260px; min-width: 260px; background: #1A1A2E; height: 100vh; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 40; transition: transform .3s; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: #E94560; border-radius: 2px; }
+  .nav-section-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 6px; color: #E94560; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: .05em; border-left: 3px solid transparent; transition: all .2s; }
+  .nav-section-header:hover { background: rgba(255,255,255,.04); }
+  .nav-section-header .nav-arrow { transition: transform .3s; font-size: .7rem; }
+  .nav-section-header.collapsed .nav-arrow { transform: rotate(-90deg); }
+  .nav-sub { overflow: hidden; max-height: 500px; transition: max-height .3s ease; }
+  .nav-sub.collapsed { max-height: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px 9px 32px; color: #a0aec0; font-size: 0.8rem; cursor: pointer; border-left: 3px solid transparent; transition: all .2s; text-decoration: none; }
+  .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
+  .nav-item.active { color: #E94560; border-left-color: #E94560; background: rgba(233,69,96,.1); }
+  .nav-progress { height: 3px; background: linear-gradient(to right, #E94560, #ff8c69); transition: width .3s; }
+
+  /* MAIN CONTENT */
+  #main { margin-left: 260px; min-height: 100vh; }
+  .section-card { background: #fff; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.06); }
+  .section-title { font-size: 1.8rem; color: #1A1A2E; margin-bottom: 0.5rem; }
+  .section-subtitle { color: #5a6070; font-size: 1rem; margin-bottom: 2rem; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0f3460 100%); color: #fff; border-radius: 16px; padding: 4rem 3rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; background: rgba(233,69,96,.15); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; left: -40px; width: 200px; height: 200px; background: rgba(233,69,96,.1); border-radius: 50%; }
+  .stat-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: 1.2rem 1.5rem; text-align: center; backdrop-filter: blur(10px); }
+  .stat-number { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #E94560; }
+
+  /* ACCORDION */
+  .accordion-btn { width: 100%; text-align: left; padding: 1rem 1.2rem; background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; font-weight: 600; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; font-size: 0.95rem; }
+  .accordion-btn:hover { background: #eef0f4; }
+  .accordion-btn.open { background: #1A1A2E; color: #fff; border-color: #1A1A2E; border-radius: 10px 10px 0 0; }
+  .accordion-btn .arrow { transition: transform .3s; font-size: 1.1rem; }
+  .accordion-btn.open .arrow { transform: rotate(180deg); }
+  .accordion-content { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px; padding: 1.2rem; background: #fff; display: none; color: #2d3748; font-size: 0.95rem; line-height: 1.7; }
+  .accordion-content.open { display: block; }
+
+  /* TABS */
+  .tab-btn { padding: .7rem 1.4rem; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 2px solid transparent; color: #5a6070; background: #f0f2f5; transition: all .2s; }
+  .tab-btn.active { background: #1A1A2E; color: #fff; border-color: #1A1A2E; }
+  .tab-content { display: none; padding: 1.5rem; background: #fff; border: 2px solid #1A1A2E; border-radius: 0 8px 8px 8px; }
+  .tab-content.active { display: block; }
+
+  /* TOGGLE */
+  .toggle-btn { padding: .6rem 1.2rem; border-radius: 30px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 2px solid #1A1A2E; color: #1A1A2E; background: #fff; transition: all .2s; }
+  .toggle-btn.active { background: #1A1A2E; color: #fff; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 16px; padding: 2rem; max-width: 560px; width: 100%; position: relative; max-height: 85vh; overflow-y: auto; }
+  .modal-box h3 { font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #1A1A2E; margin-bottom: 1rem; }
+  .script-text { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1rem; font-size: 0.9rem; line-height: 1.7; color: #2d3748; white-space: pre-wrap; }
+
+  /* COPY BUTTON */
+  .copy-btn { display: inline-flex; align-items: center; gap: 6px; padding: .5rem 1rem; background: #E94560; color: #fff; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; min-height: 44px; }
+  .copy-btn:hover { background: #c73652; }
+  .copy-btn.copied { background: #1A7A4A; }
+
+  /* SCRIPT BOX */
+  .script-box { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1.2rem; font-size: 0.92rem; line-height: 1.8; color: #2d3748; position: relative; white-space: pre-wrap; }
+  .script-title { font-weight: 700; color: #E94560; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
+
+  /* CHECKLIST */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .check-item input[type=checkbox] { width: 20px; height: 20px; accent-color: #1A7A4A; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .check-item label { cursor: pointer; font-size: 0.95rem; line-height: 1.5; color: #2d3748; }
+  .check-item input:checked + label { text-decoration: line-through; color: #a0aec0; }
+
+  /* VISUAL CHECKLIST */
+  .vis-check { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .vis-check-icon { width: 24px; height: 24px; background: #1A7A4A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: .85rem; flex-shrink: 0; margin-top: 2px; }
+  .vis-check span { font-size: 0.93rem; line-height: 1.5; color: #2d3748; }
+
+  /* TIMELINE */
+  .timeline { display: flex; gap: 0; overflow-x: auto; padding: 1.5rem 0; }
+  .tl-step { flex: 1; min-width: 100px; text-align: center; position: relative; cursor: pointer; }
+  .tl-step::after { content: ''; position: absolute; top: 20px; left: 60%; width: 80%; height: 3px; background: #e2e8f0; z-index: 0; }
+  .tl-step:last-child::after { display: none; }
+  .tl-dot { width: 42px; height: 42px; border-radius: 50%; background: #e2e8f0; border: 3px solid #e2e8f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 800; font-size: 0.9rem; color: #5a6070; position: relative; z-index: 1; transition: all .3s; }
+  .tl-step.active .tl-dot { background: #E94560; border-color: #E94560; color: #fff; }
+  .tl-step.done .tl-dot { background: #1A7A4A; border-color: #1A7A4A; color: #fff; }
+  .tl-label { font-size: 0.75rem; font-weight: 600; color: #5a6070; line-height: 1.3; }
+  .tl-step.active .tl-label { color: #E94560; }
+
+  /* INFO CARDS */
+  .info-card { background: #f8f9fa; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; }
+  .info-card.accent { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border: none; }
+  .info-card.success { background: #f0fdf4; border-color: #1A7A4A; }
+  .info-card.warning { background: #fffbeb; border-color: #C47A00; }
+  .info-card.danger { background: #fff5f7; border-color: #E94560; }
+
+  /* SLIDER */
+  input[type=range] { accent-color: #E94560; width: 100%; height: 6px; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+  .badge-red { background: #fff5f7; color: #E94560; border: 1px solid #E94560; }
+  .badge-green { background: #f0fdf4; color: #1A7A4A; border: 1px solid #1A7A4A; }
+  .badge-coming { background: #fefce8; color: #854d0e; border: 1px solid #C47A00; }
+
+  /* STEP FLOW */
+  .step-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .step-pill { background: #1A1A2E; color: #fff; padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
+  .step-arrow { color: #E94560; font-size: 1.2rem; font-weight: 700; }
+
+  /* FONT CONTROL */
+  #font-ctrl { position: fixed; bottom: 80px; right: 20px; z-index: 50; display: flex; flex-direction: column; gap: 6px; }
+  .fc-btn { width: 40px; height: 40px; background: #1A1A2E; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+  .fc-btn:hover { background: #E94560; }
+  .fc-label { text-align: center; font-size: 0.7rem; color: #5a6070; font-weight: 600; }
+
+  /* BACK TO TOP */
+  #back-top { position: fixed; bottom: 20px; right: 20px; z-index: 50; width: 40px; height: 40px; background: #E94560; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; display: none; align-items: center; justify-content: center; }
+  #back-top.show { display: flex; }
+
+  /* MOBILE */
+  #hamburger { display: none; position: fixed; top: 12px; left: 12px; z-index: 60; background: #1A1A2E; color: #fff; border: none; border-radius: 8px; width: 44px; height: 44px; font-size: 1.3rem; cursor: pointer; align-items: center; justify-content: center; }
+  #mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 35; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #hamburger { display: flex; }
+    #mob-overlay.show { display: block; }
+    .hero { padding: 2.5rem 1.5rem; }
+    .section-card { padding: 1.5rem; }
+    .timeline { gap: 0; }
+    .tl-step { min-width: 80px; }
+    .tab-btn { width: 100%; border-radius: 8px; margin-bottom: 4px; }
+    .tab-content { border-radius: 8px; }
+  }
+
+  @media (max-width: 480px) {
+    :root { --fs: 16px; }
+    .section-card { padding: 1.2rem; }
+    .script-box { font-size: 0.9rem; }
+    .stat-number { font-size: 1.6rem; }
+    .hero { padding: 2rem 1.2rem; }
+  }
+
+  /* FADE IN */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* 4F BOX */
+  .f4-step { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .f4-letter { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #E94560; line-height: 1; }
+  .f4-word { font-weight: 700; font-size: 1rem; color: #1A1A2E; }
+  .f4-desc { font-size: 0.85rem; color: #5a6070; margin-top: .3rem; }
+
+  /* WEEKLY CALENDAR */
+  .week-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .week-cal-day { border-radius: 10px; padding: .7rem .3rem; text-align: center; font-size: 0.75rem; font-weight: 600; }
+  .week-cal-day .day-name { font-size: 0.65rem; color: #5a6070; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+  .wc-green { background: #f0fdf4; border: 2px solid #1A7A4A; color: #1A7A4A; }
+  .wc-brown { background: #fdf8f0; border: 2px solid #C47A00; color: #C47A00; }
+  .wc-purple { background: #faf0ff; border: 2px solid #7c3aed; color: #7c3aed; }
+  .wc-pink { background: #fff0f5; border: 2px solid #E94560; color: #E94560; }
+  .wc-gray { background: #f9fafb; border: 2px dashed #e2e8f0; color: #a0aec0; }
+
+  /* MIC BOX */
+  .mic-box { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border-radius: 14px; padding: 1.5rem 2rem; border-left: 5px solid #E94560; }
+
+  /* TOOL CARD */
+  .tool-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; transition: border-color .2s, box-shadow .2s; }
+  .tool-card:hover { border-color: #1A1A2E; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .tool-card.coming { border-color: #C47A00; border-style: dashed; background: #fffbeb; }
+  .tool-icon { font-size: 2.5rem; margin-bottom: .8rem; }
+
+  /* HOME PAGE */
+  #home-page { min-height: 100vh; background: #f5f5f7; }
+  .home-header { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 60%, #0f3460 100%); padding: 3rem 2rem 2.5rem; text-align: center; position: relative; overflow: hidden; }
+  .home-header::before { content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px; background: rgba(233,69,96,.12); border-radius: 50%; }
+  .home-header::after { content: ''; position: absolute; bottom: -60px; left: -60px; width: 250px; height: 250px; background: rgba(233,69,96,.08); border-radius: 50%; }
+  .home-logo { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 1rem; position: relative; z-index: 1; }
+  .home-logo-badge { width: 52px; height: 52px; background: #E94560; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff; font-size: 1.4rem; }
+  .home-logo-text { text-align: left; }
+  .home-logo-name { font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff; font-size: 1.5rem; line-height: 1.1; }
+  .home-logo-sub { color: #a0aec0; font-size: .82rem; }
+  .home-tagline { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .5rem; position: relative; z-index: 1; }
+  .home-sub { color: #a0aec0; font-size: .95rem; position: relative; z-index: 1; }
+
+  /* HOME CARDS GRID */
+  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; padding: 2rem; max-width: 680px; margin: 0 auto; }
+  .home-card { background: #fff; border-radius: 16px; padding: 1.5rem; border: 2px solid #e2e8f0; cursor: pointer; transition: all .2s; text-decoration: none; display: flex; flex-direction: column; gap: .5rem; position: relative; overflow: hidden; }
+  .home-card:hover { border-color: #E94560; box-shadow: 0 8px 24px rgba(233,69,96,.12); transform: translateY(-2px); }
+  .home-card-emoji { font-size: 2.2rem; line-height: 1; }
+  .home-card-cap { font-size: .72rem; font-weight: 700; color: #E94560; text-transform: uppercase; letter-spacing: .08em; }
+  .home-card-title { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.05rem; color: #1A1A2E; line-height: 1.2; }
+  .home-card-desc { font-size: .82rem; color: #5a6070; line-height: 1.4; }
+  .home-card-arrow { position: absolute; bottom: 1.2rem; right: 1.2rem; color: #E94560; font-size: 1.1rem; font-weight: 700; }
+  .home-cta-wrap { text-align: center; padding: 0 2rem 2.5rem; }
+  .home-cta-btn { display: inline-flex; align-items: center; gap: 8px; background: #1A1A2E; color: #fff; padding: 1rem 2rem; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: background .2s; min-height: 44px; }
+  .home-cta-btn:hover { background: #E94560; }
+
+  /* CONTACT SOURCE GRID */
+  .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }
+  .source-card { background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; padding: .9rem; }
+  .source-card-title { font-weight: 700; font-size: .85rem; color: #1A1A2E; margin-bottom: .2rem; }
+  .source-card-desc { font-size: .78rem; color: #5a6070; line-height: 1.4; }
+
+  @media (max-width: 600px) {
+    .home-grid { grid-template-columns: 1fr; gap: 1rem; padding: 1.2rem; }
+    .home-tagline { font-size: 1.4rem; }
+    .source-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 380px) {
+    .source-grid { grid-template-columns: 1fr; }
+  }
+
+  /* RULE BOX */
+  .rule-box { background: linear-gradient(135deg, #1A1A2E, #16213E); border-left: 5px solid #E94560; border-radius: 12px; padding: 1.3rem 1.5rem; color: #fff; margin-bottom: 1rem; }
+  .rule-box-title { font-weight: 700; color: #ff8c69; margin-bottom: .4rem; font-size: .95rem; }
+  .rule-box-text { font-size: .9rem; color: #cbd5e0; line-height: 1.6; }
+
+  /* GOLD BOX */
+  .gold-box { background: #fffbeb; border: 2px solid #C47A00; border-radius: 12px; padding: 1.3rem 1.5rem; }
+
+  /* WARNING BOX */
+  .warn-box { background: #fffbeb; border: 2px solid #C47A00; border-radius: 12px; padding: 1.2rem 1.4rem; display: flex; gap: .8rem; }
+  .warn-box-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .warn-box-text { font-size: .9rem; color: #5a4a00; line-height: 1.6; }
+
+  /* STEP ACCORDION */
+  .step-accordion { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin-bottom: .8rem; }
+  .step-acc-btn { width: 100%; text-align: left; padding: 1.1rem 1.3rem; background: #f8f9fa; font-weight: 700; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: none; font-size: .95rem; font-family: 'Inter', sans-serif; transition: background .2s; min-height: 44px; }
+  .step-acc-btn:hover { background: #eef0f4; }
+  .step-acc-btn.open { background: #1A1A2E; color: #fff; }
+  .step-acc-btn .arrow { transition: transform .3s; }
+  .step-acc-btn.open .arrow { transform: rotate(180deg); }
+  .step-acc-body { display: none; padding: 1.2rem; font-size: .93rem; color: #2d3748; line-height: 1.7; }
+  .step-acc-body.open { display: block; }
+
+  /* ACTION BTN */
+  .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: .75rem 1.3rem; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; border: none; transition: all .2s; min-height: 44px; text-decoration: none; }
+  .action-btn-primary { background: #E94560; color: #fff; }
+  .action-btn-primary:hover { background: #c73652; }
+  .action-btn-dark { background: #1A1A2E; color: #fff; }
+  .action-btn-dark:hover { background: #16213E; }
+  .action-btn-outline { background: #fff; color: #1A1A2E; border: 2px solid #1A1A2E; }
+  .action-btn-outline:hover { background: #f0f2f5; }
+
+  /* OVERRIDE: niente sidebar nei capitoli */
+  #sidebar { display: none !important; }
+  #hamburger { display: none !important; }
+  #main { margin-left: 0 !important; }
+</style>
+</head>
+<body>
+
+<!-- CHAPTER NAV BAR -->
+<div style="background:#1A1A2E;padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:1rem;">
+  <a href="manuale-collaboratore-v2.html" style="color:#E94560;font-weight:700;font-size:.88rem;text-decoration:none;">← Tutti i capitoli</a>
+  <span style="color:#a0aec0;font-size:.8rem;font-family:'Poppins',sans-serif;">Cap. 3 — Contatti</span>
+  <a href="cap4-obiezioni.html" style="color:#E94560;font-weight:700;font-size:.88rem;text-decoration:none;">Cap. 4 →</a>
+</div>
+
+<div id="main" style="padding: 1.5rem;">
+<div class="section-card fade-in" id="s-contatti-offline">
+  <div style="display:inline-block;background:#f0fdf4;border:1px solid #1A7A4A;border-radius:20px;padding:.3rem .9rem;font-size:.78rem;font-weight:700;color:#1A7A4A;margin-bottom:1rem;">📲 Cap. 3 — Contatti</div>
+  <h2 class="section-title">🤝 Offline — Presenza, relazioni vere, contatto umano</h2>
+
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.5rem;">Hai 2 modalità per generare clienti e distributori — offline e online. Puoi usarle separatamente o insieme, come preferisci. Entrambe funzionano — l'importante è essere costanti.</p>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.5rem;">Qui parliamo di energia sul campo. I contatti nascono in modo naturale quando sei in movimento — lavoro, palestra, commissioni, tempo libero. La regola più importante è creare relazioni vere e sincere, senza fretta e senza dover parlare subito del progetto. Il momento giusto arriverà, con gli script giusti.</p>
+
+  <div style="margin-bottom:1.5rem;">
+    <button class="action-btn action-btn-dark" onclick="alert('Trovi il video nel Topic Contatti su Telegram')">▶️ Guarda il video introduttivo → Topic Contatti su Telegram</button>
+  </div>
+
+  <div class="warn-box" style="margin-bottom:1.5rem;border:2px solid #C47A00;border-radius:12px;background:#fffbeb;">
+    <div class="warn-box-icon">⚠️</div>
+    <div class="warn-box-text"><strong>Skincare Academy:</strong> Prima di dedicarti alle strategie legate ai prodotti cosmeceutici, ti consigliamo vivamente di partecipare al corso della Skincare Academy. È sufficiente effettuare un ordine di 500 punti della linea cosmeceutica per essere aggiunto al gruppo dedicato. Al termine riceverai il tuo <strong>Certificato di Beauty Consultant Duolife</strong> — che ti darà autorevolezza e sicurezza quando ti presenterai alle persone. Formazione prima di tutto — è la base per ottenere risultati solidi e duraturi.</div>
+  </div>
+
+  <!-- LISTA NOMI DINAMICA -->
+  <div style="background:#f8f9fa;border-radius:12px;padding:1.3rem;margin-bottom:1rem;border:1px solid #e2e8f0;">
+    <div style="font-weight:700;font-size:1rem;color:#1A1A2E;margin-bottom:.4rem;">📋 Lista Nomi Dinamica</div>
+    <p style="font-size:.9rem;color:#4a5568;line-height:1.7;margin-bottom:.8rem;">Uno strumento fondamentale per lavorare con metodo e continuità.</p>
+    <button class="action-btn action-btn-dark" onclick="alert('Trovi il video nel Topic Lista Nomi su Telegram')">▶️ Guarda il video → Topic Lista Nomi su Telegram</button>
+  </div>
+
+  <!-- CONTATTI FREDDI -->
+  <div style="background:#f8f9fa;border-radius:12px;padding:1.3rem;margin-bottom:1rem;border:1px solid #e2e8f0;">
+    <div style="font-weight:700;font-size:1rem;color:#1A1A2E;margin-bottom:.4rem;">❄️ Contatti Freddi</div>
+    <p style="font-size:.9rem;color:#4a5568;line-height:1.7;margin-bottom:.8rem;">Quando sei in vacanza o incontri qualcuno che probabilmente non rivedrai, ha senso fare il contatto subito — in modo semplice e rispettoso.</p>
+    <button class="action-btn action-btn-dark" onclick="alert('Trovi il video nel Topic Contatti su Telegram')">▶️ Guarda il video → Topic Contatti su Telegram</button>
+  </div>
+
+  <!-- BEAUTY CASE -->
+  <div style="background:#fff5f7;border-radius:12px;padding:1.3rem;margin-bottom:1.5rem;border:1px solid rgba(233,69,96,.3);">
+    <div style="font-weight:700;font-size:1rem;color:#E94560;margin-bottom:.4rem;">💼 Strategia Beauty Case</div>
+    <button class="action-btn action-btn-primary" onclick="window.open('https://bloomind.my.canva.site/strategiabeautycase','_blank')">Scopri la Strategia Beauty Case →</button>
+  </div>
+
+  <!-- 33 MODI -->
+  <h3 style="font-size:1.2rem;margin-bottom:1rem;color:#1A1A2E;">33 Modi per Trovare Nuovi Contatti</h3>
+
+  <div style="font-weight:700;font-size:.85rem;color:#1d4ed8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:2px solid #eff6ff;">ONLINE</div>
+  <div class="source-grid" style="margin-bottom:1.5rem;">
+    <div class="source-card"><div class="source-card-title">📱 1. Pubblica contenuti di valore</div><div class="source-card-desc">Entro 24h scrivi a chi ha reagito: "Cosa ti ha colpito?"</div></div>
+    <div class="source-card"><div class="source-card-title">👥 2. Amici su Facebook</div><div class="source-card-desc">Scorri la lista fino in fondo. Riallaccia rapporti in modo umano, prima del business.</div></div>
+    <div class="source-card"><div class="source-card-title">📷 3. Follower su Instagram</div><div class="source-card-desc">Invia un messaggio di ringraziamento a chi ti segue. Chiedi cosa li ha attirati.</div></div>
+    <div class="source-card"><div class="source-card-title">📸 4. Stories con sondaggi</div><div class="source-card-desc">Pubblica un sondaggio ("Ti senti più stanca o gonfia?"). Scrivi a chi risponde.</div></div>
+    <div class="source-card"><div class="source-card-title">💬 5. Commenta i post degli altri</div><div class="source-card-desc">Lascia commenti sinceri. Fatti notare come persona, non come venditrice.</div></div>
+    <div class="source-card"><div class="source-card-title">📰 6. Fanpage e riviste di settore</div><div class="source-card-desc">Monitora i commenti sotto articoli di salute e bellezza. Contatta chi fa domande.</div></div>
+    <div class="source-card"><div class="source-card-title">🎥 7. Video brevi</div><div class="source-card-desc">Crea video di 3-7 minuti su argomenti che conosci (es. benefici della cheratina).</div></div>
+    <div class="source-card"><div class="source-card-title">💼 8. LinkedIn</div><div class="source-card-desc">Segui hashtag #leadership #lavoroonline. Interagisci con commenti ragionati.</div></div>
+    <div class="source-card"><div class="source-card-title">🔁 9. Gruppi chiusi Telegram/WhatsApp</div><div class="source-card-desc">Nicchie di benessere e crescita. Osserva, poi avvia conversazioni private.</div></div>
+    <div class="source-card"><div class="source-card-title">📝 10. Blog e siti del settore</div><div class="source-card-desc">Commenta articoli di bellezza/benessere. Offri una collaborazione.</div></div>
+    <div class="source-card"><div class="source-card-title">🎁 11. Giveaway e contest</div><div class="source-card-desc">Chiedi email o numero come condizione per partecipare.</div></div>
+    <div class="source-card"><div class="source-card-title">🤝 12. Referral</div><div class="source-card-desc">Incentiva i clienti attuali a portarti nuovi contatti con un piccolo omaggio.</div></div>
+    <div class="source-card"><div class="source-card-title">👀 13. Analisi follower competitor</div><div class="source-card-desc">Identifica chi segue profili simili al tuo. Contatta con una soluzione migliore.</div></div>
+    <div class="source-card"><div class="source-card-title">💡 14. Lead Magnet</div><div class="source-card-desc">Offri una checklist gratuita (es. "5 segreti per capelli radiosi") in cambio del contatto.</div></div>
+    <div class="source-card"><div class="source-card-title">📣 15. Gruppi Facebook tematici</div><div class="source-card-desc">Non vendere: diventa "la persona utile" rispondendo alle domande.</div></div>
+  </div>
+
+  <div style="font-weight:700;font-size:.85rem;color:#1A7A4A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.7rem;padding-bottom:.4rem;border-bottom:2px solid #f0fdf4;">OFFLINE</div>
+  <div class="source-grid">
+    <div class="source-card"><div class="source-card-title">📞 16. Lista contatti telefonica</div><div class="source-card-desc">Il tuo mercato caldo. Proponi con classe e rispetto.</div></div>
+    <div class="source-card"><div class="source-card-title">👫 17. Amici degli amici</div><div class="source-card-desc">Trasforma un "no" in un ponte: "Conosci qualcuno che tiene molto alla cura di sé?"</div></div>
+    <div class="source-card"><div class="source-card-title">👨‍👩‍👧 18. Famiglia e amici intimi</div><div class="source-card-desc">Condividi in modo leggero e sincero. Lascia che decidano da soli.</div></div>
+    <div class="source-card"><div class="source-card-title">🛒 19. Incontri casuali</div><div class="source-card-desc">Al supermercato, in palestra, dal medico. Porta sempre un campione da mostrare.</div></div>
+    <div class="source-card"><div class="source-card-title">🌐 20. Networking ed eventi locali</div><div class="source-card-desc">Ascolta i bisogni altrui. Scambia i contatti social per un follow-up.</div></div>
+    <div class="source-card"><div class="source-card-title">💆 21. Centri estetici e saloni</div><div class="source-card-desc">Proponi una collaborazione win-win. "Hai 20 minuti?"</div></div>
+    <div class="source-card"><div class="source-card-title">🔍 22. Google + professionisti locali</div><div class="source-card-desc">Cerca dietologi, personal trainer, fisioterapisti. Chiama per proporre un progetto.</div></div>
+    <div class="source-card"><div class="source-card-title">🧘 23. Attività extra-lavorative</div><div class="source-card-desc">Yoga, palestra, corsi di lingua. Costruisci relazioni sulla vita prima del business.</div></div>
+    <div class="source-card"><div class="source-card-title">🏪 24. Expo e fiere tematiche</div><div class="source-card-desc">Prepara biglietti da visita e una presentazione di 2 frasi. Follow-up il giorno dopo.</div></div>
+    <div class="source-card"><div class="source-card-title">🤝 25. Imprenditori di fiducia</div><div class="source-card-desc">Dentisti, parrucchieri, meccanici storici. Sfrutta la loro fiducia.</div></div>
+    <div class="source-card"><div class="source-card-title">👶 26. Eventi per bambini</div><div class="source-card-desc">Compleanni, parchi. Ascolta le mamme che parlano di stanchezza o salute.</div></div>
+    <div class="source-card"><div class="source-card-title">🌱 27. Gruppi locali e sociali</div><div class="source-card-desc">Cooperative, gruppi eco. Connettiti con chi condivide i tuoi valori.</div></div>
+    <div class="source-card"><div class="source-card-title">📋 28. Forum e offerte di lavoro</div><div class="source-card-desc">Chi pubblica annunci cerca guadagno. Offri una collaborazione flessibile.</div></div>
+    <div class="source-card"><div class="source-card-title">🌍 29. Comunità italiana all'estero</div><div class="source-card-desc">Gruppi "Italiani a...". Combatti la solitudine, crea fiducia.</div></div>
+    <div class="source-card"><div class="source-card-title">🎓 30. Lavoratori stagionali</div><div class="source-card-desc">Studenti o giovani che cercano guadagno extra con solo il telefono.</div></div>
+    <div class="source-card"><div class="source-card-title">🏢 31. Associazioni professionali</div><div class="source-card-desc">Camere di commercio, ordini di categoria. Aumenta la visibilità.</div></div>
+    <div class="source-card"><div class="source-card-title">📰 32. Stampa locale e media</div><div class="source-card-desc">Giornali, radio, podcast locali. Proponi una storia interessante.</div></div>
+    <div class="source-card"><div class="source-card-title">👨‍👩‍👧‍👦 33. Amici dei membri del team</div><div class="source-card-desc">La regola dei 6 passi. Chiedi ai collaboratori chi conoscono.</div></div>
+  </div>
+</div>
+
+<div class="section-card fade-in" id="s-contatti-online">
+  <h2 class="section-title">📱 Online — Il tuo negozio aperto 24 ore su 24</h2>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.5rem;">I social sono il tuo negozio aperto 24 ore su 24. Non devi essere esperta — devi essere costante. Qui trovi esattamente cosa fare, quando farlo e cosa dire. Segui il metodo e i contatti arriveranno!</p>
+  <div class="info-card danger" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#E94560;margin-bottom:.3rem;">La regola più importante</div>
+    <p style="font-size:.92rem;color:#4a5568;margin:0;line-height:1.7;">Guarda sempre chi ha visto le tue stories e chi ha messo una reazione… fai sempre il primo passo!</p>
+  </div>
+
+  <!-- PROFILO -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">Prima di tutto — Sistema il tuo profilo</h3>
+  <div style="background:#f8f9fa;border-radius:12px;padding:1.3rem;margin-bottom:1.5rem;border:1px solid #e2e8f0;">
+    <p style="font-size:.92rem;color:#4a5568;line-height:1.7;margin-bottom:.8rem;"><strong>Foto profilo:</strong> deve vedersi bene il tuo viso. Sorridi. Le persone seguono le persone, non i loghi.</p>
+    <p style="font-size:.92rem;color:#4a5568;line-height:1.7;margin-bottom:1rem;"><strong>Bio:</strong> scrivi chi sei e di cosa ti occupi in modo semplice e positivo.</p>
+    <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin-bottom:.5rem;">SCHEMA BIO (3 righe):</div>
+    <div style="font-size:.88rem;color:#4a5568;line-height:1.9;margin-bottom:1rem;padding-left:.5rem;">
+      Riga 1 — chi sei (un tratto identitario)<br>
+      Riga 2 — cosa stai costruendo o cosa coltivi<br>
+      Riga 3 — un invito personale (es. "Scrivimi 'CIAO' per fare due chiacchiere")
+    </div>
+    <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin-bottom:.7rem;">ESEMPI:</div>
+    <div style="display:flex;flex-direction:column;gap:.7rem;">
+      <div class="script-box" style="font-size:.85rem;padding:.8rem 1rem;">Mamma, moglie, sognatrice con i piedi per terra 🌱
+Coltivo benessere, libertà e relazioni vere.
+Scrivimi "CIAO", parliamone insieme.</div>
+      <div class="script-box" style="font-size:.85rem;padding:.8rem 1rem;">Curiosa di natura, appassionata di benessere 🌱
+Sto costruendo qualcosa di bello, un passo alla volta.
+Se ti incuriosisce, scrivimi "CIAO".</div>
+      <div class="script-box" style="font-size:.85rem;padding:.8rem 1rem;">Donna che sceglie sé stessa, ogni giorno 🌱
+Tra benessere, crescita e progetti che mi assomigliano.
+Scrivimi "CIAO" per conoscerci meglio.</div>
+      <div class="script-box" style="font-size:.85rem;padding:.8rem 1rem;">Imprenditrice digitale + amante delle cose semplici 🌱
+Coltivo libertà, equilibrio e una community che mi somiglia.
+Scrivimi "CIAO", entriamo in connessione.</div>
+    </div>
+    <p style="font-size:.85rem;color:#5a6070;margin-top:.8rem;line-height:1.6;"><strong>IMPORTANTE:</strong> aggiungi persone nuove ai tuoi profili ogni giorno per aumentare le visualizzazioni. Quando avrai 30 giorni di pubblicazioni alle spalle, costruiremo insieme una bio più strategica.</p>
+  </div>
+
+  <!-- PRIMO POST -->
+  <div class="info-card success" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#1A7A4A;margin-bottom:.4rem;">Il tuo primo post — "Inizio ufficiale"</div>
+    <p style="font-size:.92rem;color:#2d5a3d;margin:0;line-height:1.7;">Una foto semplice di te (anche col telefono) e racconti il tuo "perché": perché hai deciso di iniziare questo percorso e cosa stai costruendo.</p>
+  </div>
+
+  <!-- PIANO SETTIMANALE -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">I Tuoi 7 Giorni — Piano Settimanale</h3>
+  <div class="week-cal" style="margin-bottom:.8rem;">
+    <div class="week-cal-day wc-green"><div class="day-name">LUN</div>🟢<br><small>Stories Dimagrimento</small></div>
+    <div class="week-cal-day wc-brown"><div class="day-name">MAR</div>🟤<br><small>Stories Business + Post feed</small></div>
+    <div class="week-cal-day wc-purple"><div class="day-name">MER</div>🟣<br><small>Stories Capelli</small></div>
+    <div class="week-cal-day wc-brown"><div class="day-name">GIO</div>🟤<br><small>Stories Business + Post feed</small></div>
+    <div class="week-cal-day wc-pink"><div class="day-name">VEN</div>🌸<br><small>Stories Pelle</small></div>
+    <div class="week-cal-day wc-gray"><div class="day-name">SAB</div>📸<br><small>Vita reale + squadra</small></div>
+    <div class="week-cal-day wc-gray"><div class="day-name">DOM</div>📸<br><small>Vita reale + squadra</small></div>
+  </div>
+  <p style="font-size:.85rem;color:#5a6070;margin-bottom:1.5rem;line-height:1.6;">Per i 5 blocchi di stories, distanziali di un'ora l'uno dall'altro. I modelli grafici li scarichi dal Topic dedicato su Telegram.</p>
+
+  <!-- TEMPLATE POST -->
+  <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.5rem;">
+    <button class="tab-btn active" onclick="openTabGroup('post', 'post-mar', this)">Post Martedì — Business</button>
+    <button class="tab-btn" onclick="openTabGroup('post', 'post-gio', this)">Post Giovedì — Prodotto</button>
+  </div>
+
+  <div id="post-mar" class="tab-content active" style="margin-bottom:1.5rem;">
+    <p style="font-size:.9rem;color:#4a5568;margin-bottom:.8rem;line-height:1.7;"><strong>Una foto tua + 3-4 righe di testo.</strong><br>La foto: tu mentre fai qualcosa. Tu al pc, tu con il quaderno, tu davanti al caffè la mattina presto, tu in macchina prima di un appuntamento.</p>
+    <div style="font-weight:700;font-size:.88rem;color:#1A1A2E;margin-bottom:.5rem;">SCHEMA (4 righe):</div>
+    <div style="font-size:.88rem;color:#4a5568;line-height:2;padding-left:.5rem;">
+      Riga 1 — Una frase che apre. Una riflessione, una domanda, una scelta dichiarata. Qualcosa che fa fermare il dito.<br>
+      Riga 2 — Il contesto. Cosa hai capito di te, cosa stai cambiando, cosa hai smesso di fare.<br>
+      Riga 3 — Cosa stai costruendo dentro BlooMIND o col softmarketing. Concreto, presente, non promesse future.<br>
+      Riga 4 — Un invito gentile. Esempio: "Se ti va, confrontiamoci in privato."
+    </div>
+  </div>
+
+  <div id="post-gio" class="tab-content" style="margin-bottom:1.5rem;">
+    <p style="font-size:.9rem;color:#4a5568;margin-bottom:.8rem;line-height:1.7;"><strong>Una foto del prodotto + testo breve.</strong> Foto vera: il prodotto nella tua vita reale (in mano, sul tavolo, accanto al caffè).</p>
+    <div style="display:flex;flex-direction:column;gap:.8rem;">
+      <div>
+        <div style="font-weight:700;font-size:.88rem;color:#1A1A2E;margin-bottom:.4rem;">OPZIONE A — La tua esperienza diretta:</div>
+        <div style="font-size:.88rem;color:#4a5568;line-height:2;padding-left:.5rem;">
+          Riga 1 — Da quanto lo usi e come lo integri nella tua giornata<br>
+          Riga 2 — Un dettaglio sensoriale (sapore, profumo, sensazione, gesto)<br>
+          Riga 3 — Cosa stai notando di concreto (senza esagerare)<br>
+          Riga 4 — Invito con parola chiave
+        </div>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:.88rem;color:#1A1A2E;margin-bottom:.4rem;">OPZIONE B — La storia di qualcuno:</div>
+        <div style="font-size:.88rem;color:#4a5568;line-height:2;padding-left:.5rem;">
+          Riga 1 — Il punto di partenza con le sue parole<br>
+          Riga 2 — Cosa aveva provato prima senza successo<br>
+          Riga 3 — Cosa ha cambiato e dove sta oggi<br>
+          Riga 4 — Invito con parola chiave
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTERAZIONI -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">Perché le interazioni sono fondamentali</h3>
+  <div style="background:#f8f9fa;border-radius:12px;padding:1.2rem;margin-bottom:1rem;border:1px solid #e2e8f0;">
+    <p style="font-size:.9rem;color:#4a5568;margin-bottom:.7rem;line-height:1.7;">Pubblicare non basta. Il vero lavoro inizia dopo che hai pubblicato.</p>
+    <ul style="padding-left:1.2rem;font-size:.9rem;color:#4a5568;line-height:2;">
+      <li>Le interazioni costruiscono fiducia e connessione</li>
+      <li>Più engagement = maggiore visibilità grazie all'algoritmo</li>
+      <li>Portano a conversazioni che si trasformano in opportunità</li>
+      <li>Creano un pubblico fedele e coinvolto</li>
+    </ul>
+  </div>
+
+  <!-- GESTIONE LIKE E COMMENTI -->
+  <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem;">
+    <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Gestione Like <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <p style="font-size:.9rem;color:#4a5568;line-height:1.7;margin-bottom:.8rem;">Ogni persona che mette un like è un'opportunità. Ringrazia per il supporto e apri la conversazione.</p>
+      <div class="script-box" id="like-txt">Ciao [Nome], grazie per il like e per il sostegno al mio post! Mi ha fatto piacere vedere la tua notifica…</div>
+      <div style="margin-top:.8rem;font-size:.88rem;color:#4a5568;line-height:1.7;">
+        Poi usa domande aperte:<br>
+        • Se è una persona che conosci ma non senti da tempo: "Come stai? È un po' che non ci sentiamo!"<br>
+        • Se è una persona che non conosci: "Posso chiederti come sei arrivato sul mio profilo?" 🌱
+      </div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('like-txt', this)">📋 Copia script</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">💬 Gestione Commenti <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <p style="font-size:.9rem;color:#4a5568;line-height:1.7;margin-bottom:.8rem;">Chi commenta sta già mostrando interesse: rispondi sempre pubblicamente. Poi scrivi in privato.</p>
+      <div class="script-box" id="comm-txt">Ciao [Nome], grazie per il commento al mio post… sei stato di grande sostegno per me, davvero!</div>
+      <div style="margin-top:.8rem;font-size:.88rem;color:#4a5568;line-height:1.8;">
+        POI…<br>
+        • Contatto che conosci: "Tu continua a sostenermi e vedrai che ti riserverò delle sorprese 😊 Ho tra le mani qualcosa di davvero straordinario e sono contento di condividerlo con chi mi supporta sempre… ti racconterò!"<br>
+        • Contatto che non senti da un po': "È stato che bello rivederti qui nei commenti ed è un piacere per me risentirti! Come stai??"<br>
+        • Contatto nuovo: "Mi ha fatto davvero piacere leggerti… ti è piaciuto il mio post? 🙏 Ogni feedback per me è importantissimo!"
+      </div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('comm-txt', this)">📋 Copia script</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">🤖 ChatGPT per le risposte — come usarlo <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <p style="font-size:.9rem;color:#4a5568;line-height:1.7;margin-bottom:.8rem;">Invia lo screenshot della chat e chiedi:</p>
+      <ul style="padding-left:1.2rem;font-size:.88rem;color:#4a5568;line-height:2;">
+        <li>Come posso continuare questa conversazione in modo naturale, creando connessione e interesse?</li>
+        <li>Qual è il tono del messaggio ricevuto? Come posso rispondere in modo più empatico?</li>
+        <li>Come posso portare questa conversazione verso un invito senza sembrare invadente?</li>
+        <li>Questa persona mi ha risposto in modo freddo e dubbioso. Qual è il miglior approccio?</li>
+        <li>Come posso chiudere questa conversazione in modo strategico per lasciare la porta aperta?</li>
+      </ul>
+      <div class="info-card warning" style="margin-top:.8rem;">
+        <div style="font-size:.88rem;color:#5a4a00;line-height:1.7;"><strong>CONFRONTATI CON I TUOI UPLINE</strong> le prime volte prima di inviare le risposte. L'obiettivo è creare connessioni vere! L'intelligenza artificiale è un aiuto, tuttavia è il tocco umano e autentico che farà davvero la differenza.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 TAB DM -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">Script DM — 4 categorie</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.5rem;">
+    <button class="tab-btn active" onclick="openTabGroup('dm', 'dm-dim', this)">🟢 Dimagrimento</button>
+    <button class="tab-btn" onclick="openTabGroup('dm', 'dm-cap', this)">🟣 Capelli</button>
+    <button class="tab-btn" onclick="openTabGroup('dm', 'dm-pel', this)">🌸 Pelle</button>
+    <button class="tab-btn" onclick="openTabGroup('dm', 'dm-biz', this)">🟤 Business</button>
+  </div>
+
+  <!-- TAB DIMAGRIMENTO -->
+  <div id="dm-dim" class="tab-content active">
+    <div style="display:flex;flex-direction:column;gap:.7rem;">
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-dim-like">Ciao! Ho visto che hai messo like al mio post. Cosa ti è piaciuto di più?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-dim-like', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">👁️ Ha guardato in silenzio <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-dim-view">Ciao [Nome]! 👋 Ti è mai capitato di desiderare un tasto "Reset" per il tuo corpo e la tua energia, magari senza dover impazzire tra diete e pesi? Ti racconto qualcosa di interessante… Ti va?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-dim-view', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">💬 Ha scritto "info" <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-dim-info">Ciao nome! Sono qui per valutare le tue esigenze e rispondere a tutte le tue domande, potremo così capire insieme se il nostro programma è la soluzione giusta per te. È un buon momento questo per te per la tua consulenza gratuita?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-dim-info', this)">📋 Copia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB CAPELLI -->
+  <div id="dm-cap" class="tab-content">
+    <div style="display:flex;flex-direction:column;gap:.7rem;">
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione (sondaggio) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-cap-like-a">Ciao [Nome]! Ho visto che hai risposto al mio sondaggio sui capelli... Ti capisco troppo, specialmente in questo cambio di stagione è una sfida continua! 🌸 Ma dimmi, è un problema che noti da un po' o senti che i tuoi capelli si sono indeboliti nell'ultimo periodo?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-cap-like-a', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione (testimonianza) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-cap-like-b">Grazie per il supporto, [Nome]! Mi fa piacere che quel risultato ti abbia colpita. Anche io sono rimasta a bocca aperta quando ho visto la trasformazione dopo il set alla cheratina. Tu solitamente come ti prendi cura dei tuoi capelli o stai cercando qualcosa di più profondo?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-cap-like-b', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">👁️ Ha guardato in silenzio <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-cap-view">Ciao [Nome]! Passavo per un saluto veloce e volevo ringraziarti perché vedo che segui con affetto i miei consigli di bellezza. ✨ Mi chiedevo... segui i miei contenuti sulla cheratina per pura curiosità o perché anche tu stai combattendo con capelli che si spezzano o hanno perso luce?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-cap-view', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">💬 Ha scritto "info" <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-cap-info">Ciao [Nome], con piacere! Ti spiego tutto. Prima di darti i dettagli tecnici, mi racconti qual è la tua sfida più grande con i tuoi capelli in questo momento? (Caduta, crespo, punte che si spezzano)</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-cap-info', this)">📋 Copia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB PELLE -->
+  <div id="dm-pel" class="tab-content">
+    <div style="display:flex;flex-direction:column;gap:.7rem;">
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione (sondaggio) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-pel-like-a">Ciao [Nome]! Ho visto che hai risposto al mio sondaggio sulla pelle... Ti capisco troppo, specialmente con lo stress e lo smog di questo periodo è una sfida continua! 🌸 Ma dimmi, è una sensazione che noti da un po' o senti che la tua pelle ha perso tono proprio nell'ultimo periodo?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-pel-like-a', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione (testimonianza) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-pel-like-b">Grazie per il supporto, [Nome]! Mi fa piacere che quel risultato ti abbia colpita. Anche io sono rimasta a bocca aperta quando ho visto l'effetto rimpolpante del collagene e della linea anti-pollution. Tu solitamente come ti prendi cura del tuo viso o stai cercando qualcosa di più profondo che lavori dall'interno?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-pel-like-b', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">👁️ Ha guardato in silenzio <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-pel-view">Ciao [Nome]! Passavo per un saluto veloce e volevo ringraziarti perché vedo che segui con affetto i miei consigli di bellezza. ✨ Mi chiedevo... segui i miei contenuti sul collagene e la skin-care clinica per pura curiosità o perché anche tu stai combattendo con i primi segni del tempo o una pelle che ha perso luce?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-pel-view', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">💬 Ha scritto "info" <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-pel-info">Ciao [Nome]! Che piacere leggerti. ✨ Immagino tu mi scriva per i risultati che hai visto nelle storie, giusto? 🌸 Prima di spiegarti tutto, mi piacerebbe capire su cosa vorresti lavorare tu... senti la pelle più spenta e svuotata, o ti preoccupano di più le imperfezioni e i segni del tempo? Così ti dico subito se è il percorso adatto a te!</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-pel-info', this)">📋 Copia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB BUSINESS DM -->
+  <div id="dm-biz" class="tab-content">
+    <div style="display:flex;flex-direction:column;gap:.7rem;">
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione (post) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-biz-like-a">Ciao [Nome]! Grazie mille per il supporto al mio ultimo post. ✨ Mi piace molto la tua gallery e ho avuto come l'impressione che fossimo sulla stessa lunghezza d'onda. Ti è mai capitato di pensare di trasformare questa tua sensibilità in un progetto tutto tuo?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-biz-like-a', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">❤️ Ha messo una reazione (sondaggio) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-biz-like-b">Ciao [Nome]! Ho visto che hai risposto al mio sondaggio sul tempo per noi stesse... 🌸 Ti capisco troppo, è una sfida costante! Ma dimmi, è un desiderio che hai lì nel cassetto da un po' o è un periodo particolare per te?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-biz-like-b', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">👁️ Ha guardato in silenzio (A) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-biz-view-a">Ciao [Nome]! Passavo per un saluto veloce e volevo ringraziarti. Vedo che segui spesso le mie storie... mi fa davvero piacere! ✨ Ti occupi anche tu di benessere/lavoro online o sei solo una curiosa "di passaggio" sul mio profilo?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-biz-view-a', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">👁️ Ha guardato in silenzio (B) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-biz-view-b">Ciao [Nome], spero tutto bene! Mi sono accorta che ci "incrociamo" spesso qui nelle storie. Ho sbirciato il tuo profilo e ho visto che anche tu ami [tema in comune]... non potevo non scriverti! 🌸 Cosa ti ha spinta a seguirmi?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-biz-view-b', this)">📋 Copia</button>
+      </div>
+      <button class="accordion-btn" onclick="toggleAcc(this)">💬 Ha scritto "info" (target mamma) <span class="arrow">▼</span></button>
+      <div class="accordion-content">
+        <div class="script-box" id="dm-biz-info">Ciao [Nome], che piacere conoscerti! Prima di darti info, mi racconti un po' di te? Cerchi un'entrata extra o proprio un modo per gestire meglio il tempo con i tuoi bimbi?</div>
+        <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('dm-biz-info', this)">📋 Copia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IL PASSO SUCCESSIVO -->
+  <div class="rule-box" style="margin-top:1.5rem;">
+    <div class="rule-box-title">Il passo successivo</div>
+    <div class="rule-box-text" style="margin-bottom:.8rem;">Quando la persona ha mostrato interesse, il tuo obiettivo è uno solo: farle vedere il video professionale di 15-20 minuti. Non spiegare tutto in chat. Il video fa il lavoro al posto tuo.</div>
+    <div style="background:rgba(255,255,255,.1);border-radius:8px;padding:.8rem 1rem;font-size:.88rem;color:#cbd5e0;line-height:1.7;">"Ti andrebbe di approfondire? Ho un video di pochi minuti che spiega tutto — quando riesci a guardarlo?"<br><br>Dopo che lo ha visto — contattala subito in vocale: "Come ti è sembrato? Cosa ti ha colpito di più?"<br><br>• Interessata al prodotto → consulenza<br>• Interessata al business → zoom con lo sponsor</div>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER NAV -->
+<div style="background:#1A1A2E;margin-top:2rem;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;">
+  <a href="manuale-collaboratore-v2.html" style="color:#a0aec0;font-size:.85rem;text-decoration:none;">← Torna al Manuale Completo</a>
+  <span style="color:#a0aec0;font-size:.78rem;">© BlooMIND — Riservato ai collaboratori</span>
+</div>
+
+<script>
+
+// ============ HOME / MANUAL TOGGLE ============
+function showManual(){}
+
+function goHome(){}
+
+// ============ SIDEBAR SCROLL SPY ============
+const allSections = [
+  's-startup-welcome','s-startup-filosofia','s-startup-passi',
+  's-inau-panoramica','s-inau-lista','s-inau-invito','s-inau-business','s-inau-giorno7','s-inau-followup',
+  's-contatti-offline','s-contatti-online',
+  's-obiezioni',
+  's-duplicazione',
+  's-pro-esercitazione','s-pro-academy'
+];
+
+function navTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const offset = 20;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({top: top, behavior: 'smooth'});
+  }
+  if (window.innerWidth <= 768) toggleSidebar(false);
+  updateActiveNav(id);
+  return false;
+}
+
+function updateActiveNav(current) {
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    const onclick = item.getAttribute('onclick') || '';
+    const match = onclick.match(/navTo\('([^']+)'\)/);
+    if (match) {
+      item.classList.toggle('active', match[1] === current);
+    }
+  });
+}
+
+window.addEventListener('scroll', function() {
+  if (document.getElementById('main').style.display === 'none') return;
+  const scrollY = window.pageYOffset;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  if (docH > 0) {
+    const pct = Math.round((scrollY / docH) * 100);
+    const pb = document.getElementById('progress-bar');
+    const pl = document.getElementById('progress-label');
+    if (pb) pb.style.width = pct + '%';
+    if (pl) pl.textContent = pct + '% completato';
+  }
+
+  let current = allSections[0];
+  allSections.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 80) current = id;
+  });
+  updateActiveNav(current);
+
+  const bt = document.getElementById('back-top');
+  if (bt) bt.classList.toggle('show', scrollY > 400);
+
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(function(el) {
+    if (el.getBoundingClientRect().top < window.innerHeight - 60) el.classList.add('visible');
+  });
+});
+
+function initFadeIn() {
+  document.querySelectorAll('.fade-in').forEach(function(el) {
+    if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+  });
+}
+
+// ============ MOBILE SIDEBAR ============
+function toggleSidebar(){}
+
+// ============ NAV SECTION COLLAPSE ============
+function toggleNavSection(){}
+
+// ============ ACCORDION ============
+function toggleAcc(btn) {
+  const content = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  content.classList.toggle('open', !wasOpen);
+}
+
+function toggleStepAcc(btn) {
+  const body = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  body.classList.toggle('open', !wasOpen);
+}
+
+// ============ TABS ============
+function openTabGroup(group, tabId, btn) {
+  // Close all tabs with ids starting with group prefix
+  document.querySelectorAll('[id^="' + group + '"]').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  // Remove active from sibling tab buttons
+  if (btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+}
+
+// ============ TOGGLE INVITO SCRIPT ============
+function toggleInvScript(type) {
+  const s1 = document.getElementById('script-inv1');
+  const s2 = document.getElementById('script-inv2');
+  const b1 = document.getElementById('tog-inv1');
+  const b2 = document.getElementById('tog-inv2');
+  if (type === 'inv1') {
+    s1.style.display = 'block'; s2.style.display = 'none';
+    b1.classList.add('active'); b2.classList.remove('active');
+  } else {
+    s2.style.display = 'block'; s1.style.display = 'none';
+    b2.classList.add('active'); b1.classList.remove('active');
+  }
+}
+
+// ============ COPY SCRIPT (reads .script-box text content) ============
+function copyScript(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+  const doFeedback = function(b) {
+    if (!b) return;
+    const orig = b.innerHTML;
+    b.innerHTML = '✓ Copiato!';
+    b.classList.add('copied');
+    setTimeout(function() { b.innerHTML = orig; b.classList.remove('copied'); }, 2000);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() { doFeedback(btn); });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    doFeedback(btn);
+  }
+}
+
+// ============ CHECKLIST ============
+function saveChecks() {
+  const state = {};
+  for (let i=1; i<=9; i++) {
+    const el = document.getElementById('g'+i);
+    if (el) state['g'+i] = el.checked;
+  }
+  localStorage.setItem('bloomind_checklist_v2', JSON.stringify(state));
+}
+function loadChecks() {
+  const saved = localStorage.getItem('bloomind_checklist_v2');
+  if (saved) {
+    const state = JSON.parse(saved);
+    for (let i=1; i<=9; i++) {
+      const el = document.getElementById('g'+i);
+      if (el) el.checked = state['g'+i] || false;
+    }
+  }
+}
+function resetChecks() {
+  for (let i=1; i<=9; i++) {
+    const el = document.getElementById('g'+i);
+    if (el) el.checked = false;
+  }
+  localStorage.removeItem('bloomind_checklist_v2');
+}
+
+// ============ SLIDER CALCOLATORE ============
+function calcResult(val) {
+  val = parseInt(val);
+  document.getElementById('slider-val').textContent = val;
+  const conferme = Math.round(val * 0.35);
+  const presenti = Math.round(val * 0.22);
+  const guadagno = presenti * 20;
+  document.getElementById('res-conferme').textContent = conferme;
+  document.getElementById('res-presenti').textContent = presenti;
+  document.getElementById('res-guadagno').textContent = guadagno + '€';
+}
+
+// ============ FONT CONTROL ============
+const fontSizes = [16, 18, 22];
+let currentFS = 1;
+function changeFont(dir) {
+  if (dir === 0) currentFS = 1;
+  else currentFS = Math.max(0, Math.min(2, currentFS + dir));
+  document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  localStorage.setItem('bloomind_fs', currentFS);
+}
+(function loadFS() {
+  const saved = localStorage.getItem('bloomind_fs');
+  if (saved !== null) {
+    currentFS = parseInt(saved);
+    document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  }
+})();
+
+// ============ COUNTER ANIMATION ============
+function animateCounter(id, target, suffix) {
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const el = document.getElementById(id);
+  if (!el) return;
+  const timer = setInterval(function() {
+    current = Math.min(current + step, target);
+    el.textContent = current + (suffix || '');
+    if (current >= target) clearInterval(timer);
+  }, 30);
+}
+
+const heroObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      animateCounter('cnt1', 98, '%');
+      animateCounter('cnt2', 300, '€');
+      heroObserver.disconnect();
+    }
+  });
+}, {threshold: 0.3});
+
+// Observer attivato solo quando il main è visibile
+function setupHeroObserver() {
+  const hero = document.getElementById('s-startup-welcome');
+  if (hero) heroObserver.observe(hero);
+}
+
+// ============ SCROLL TO TOP ============
+function scrollToTop() {
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ============ MODAL ============
+function openModal(title, body) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ============ INIT ============
+loadChecks();
+// showManual si chiama dai link home — non si mostra niente all'avvio
+
+</script>
+</body>
+</html>

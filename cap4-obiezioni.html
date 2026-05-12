@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Obiezioni — BlooMIND</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#1A1A2E',accent:'#E94560',secondary:'#16213E',success:'#1A7A4A',warning:'#C47A00'},fontFamily:{sans:['Inter','sans-serif'],heading:['Poppins','sans-serif']}}}}</script>
+<style>
+
+  :root { --fs: 18px; }
+  html { font-size: var(--fs); scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; color: #1A1A2E; background: #f5f5f7; }
+  h1,h2,h3,h4 { font-family: 'Poppins', sans-serif; }
+
+  /* SIDEBAR */
+  #sidebar { width: 260px; min-width: 260px; background: #1A1A2E; height: 100vh; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 40; transition: transform .3s; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: #E94560; border-radius: 2px; }
+  .nav-section-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 6px; color: #E94560; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: .05em; border-left: 3px solid transparent; transition: all .2s; }
+  .nav-section-header:hover { background: rgba(255,255,255,.04); }
+  .nav-section-header .nav-arrow { transition: transform .3s; font-size: .7rem; }
+  .nav-section-header.collapsed .nav-arrow { transform: rotate(-90deg); }
+  .nav-sub { overflow: hidden; max-height: 500px; transition: max-height .3s ease; }
+  .nav-sub.collapsed { max-height: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px 9px 32px; color: #a0aec0; font-size: 0.8rem; cursor: pointer; border-left: 3px solid transparent; transition: all .2s; text-decoration: none; }
+  .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
+  .nav-item.active { color: #E94560; border-left-color: #E94560; background: rgba(233,69,96,.1); }
+  .nav-progress { height: 3px; background: linear-gradient(to right, #E94560, #ff8c69); transition: width .3s; }
+
+  /* MAIN CONTENT */
+  #main { margin-left: 260px; min-height: 100vh; }
+  .section-card { background: #fff; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.06); }
+  .section-title { font-size: 1.8rem; color: #1A1A2E; margin-bottom: 0.5rem; }
+  .section-subtitle { color: #5a6070; font-size: 1rem; margin-bottom: 2rem; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0f3460 100%); color: #fff; border-radius: 16px; padding: 4rem 3rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; background: rgba(233,69,96,.15); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; left: -40px; width: 200px; height: 200px; background: rgba(233,69,96,.1); border-radius: 50%; }
+  .stat-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: 1.2rem 1.5rem; text-align: center; backdrop-filter: blur(10px); }
+  .stat-number { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #E94560; }
+
+  /* ACCORDION */
+  .accordion-btn { width: 100%; text-align: left; padding: 1rem 1.2rem; background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; font-weight: 600; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; font-size: 0.95rem; }
+  .accordion-btn:hover { background: #eef0f4; }
+  .accordion-btn.open { background: #1A1A2E; color: #fff; border-color: #1A1A2E; border-radius: 10px 10px 0 0; }
+  .accordion-btn .arrow { transition: transform .3s; font-size: 1.1rem; }
+  .accordion-btn.open .arrow { transform: rotate(180deg); }
+  .accordion-content { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px; padding: 1.2rem; background: #fff; display: none; color: #2d3748; font-size: 0.95rem; line-height: 1.7; }
+  .accordion-content.open { display: block; }
+
+  /* TABS */
+  .tab-btn { padding: .7rem 1.4rem; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 2px solid transparent; color: #5a6070; background: #f0f2f5; transition: all .2s; }
+  .tab-btn.active { background: #1A1A2E; color: #fff; border-color: #1A1A2E; }
+  .tab-content { display: none; padding: 1.5rem; background: #fff; border: 2px solid #1A1A2E; border-radius: 0 8px 8px 8px; }
+  .tab-content.active { display: block; }
+
+  /* TOGGLE */
+  .toggle-btn { padding: .6rem 1.2rem; border-radius: 30px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 2px solid #1A1A2E; color: #1A1A2E; background: #fff; transition: all .2s; }
+  .toggle-btn.active { background: #1A1A2E; color: #fff; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 16px; padding: 2rem; max-width: 560px; width: 100%; position: relative; max-height: 85vh; overflow-y: auto; }
+  .modal-box h3 { font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #1A1A2E; margin-bottom: 1rem; }
+  .script-text { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1rem; font-size: 0.9rem; line-height: 1.7; color: #2d3748; white-space: pre-wrap; }
+
+  /* COPY BUTTON */
+  .copy-btn { display: inline-flex; align-items: center; gap: 6px; padding: .5rem 1rem; background: #E94560; color: #fff; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; min-height: 44px; }
+  .copy-btn:hover { background: #c73652; }
+  .copy-btn.copied { background: #1A7A4A; }
+
+  /* SCRIPT BOX */
+  .script-box { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1.2rem; font-size: 0.92rem; line-height: 1.8; color: #2d3748; position: relative; white-space: pre-wrap; }
+  .script-title { font-weight: 700; color: #E94560; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
+
+  /* CHECKLIST */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .check-item input[type=checkbox] { width: 20px; height: 20px; accent-color: #1A7A4A; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .check-item label { cursor: pointer; font-size: 0.95rem; line-height: 1.5; color: #2d3748; }
+  .check-item input:checked + label { text-decoration: line-through; color: #a0aec0; }
+
+  /* VISUAL CHECKLIST */
+  .vis-check { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .vis-check-icon { width: 24px; height: 24px; background: #1A7A4A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: .85rem; flex-shrink: 0; margin-top: 2px; }
+  .vis-check span { font-size: 0.93rem; line-height: 1.5; color: #2d3748; }
+
+  /* TIMELINE */
+  .timeline { display: flex; gap: 0; overflow-x: auto; padding: 1.5rem 0; }
+  .tl-step { flex: 1; min-width: 100px; text-align: center; position: relative; cursor: pointer; }
+  .tl-step::after { content: ''; position: absolute; top: 20px; left: 60%; width: 80%; height: 3px; background: #e2e8f0; z-index: 0; }
+  .tl-step:last-child::after { display: none; }
+  .tl-dot { width: 42px; height: 42px; border-radius: 50%; background: #e2e8f0; border: 3px solid #e2e8f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 800; font-size: 0.9rem; color: #5a6070; position: relative; z-index: 1; transition: all .3s; }
+  .tl-step.active .tl-dot { background: #E94560; border-color: #E94560; color: #fff; }
+  .tl-step.done .tl-dot { background: #1A7A4A; border-color: #1A7A4A; color: #fff; }
+  .tl-label { font-size: 0.75rem; font-weight: 600; color: #5a6070; line-height: 1.3; }
+  .tl-step.active .tl-label { color: #E94560; }
+
+  /* INFO CARDS */
+  .info-card { background: #f8f9fa; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; }
+  .info-card.accent { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border: none; }
+  .info-card.success { background: #f0fdf4; border-color: #1A7A4A; }
+  .info-card.warning { background: #fffbeb; border-color: #C47A00; }
+  .info-card.danger { background: #fff5f7; border-color: #E94560; }
+
+  /* SLIDER */
+  input[type=range] { accent-color: #E94560; width: 100%; height: 6px; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+  .badge-red { background: #fff5f7; color: #E94560; border: 1px solid #E94560; }
+  .badge-green { background: #f0fdf4; color: #1A7A4A; border: 1px solid #1A7A4A; }
+  .badge-coming { background: #fefce8; color: #854d0e; border: 1px solid #C47A00; }
+
+  /* STEP FLOW */
+  .step-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .step-pill { background: #1A1A2E; color: #fff; padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
+  .step-arrow { color: #E94560; font-size: 1.2rem; font-weight: 700; }
+
+  /* FONT CONTROL */
+  #font-ctrl { position: fixed; bottom: 80px; right: 20px; z-index: 50; display: flex; flex-direction: column; gap: 6px; }
+  .fc-btn { width: 40px; height: 40px; background: #1A1A2E; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+  .fc-btn:hover { background: #E94560; }
+  .fc-label { text-align: center; font-size: 0.7rem; color: #5a6070; font-weight: 600; }
+
+  /* BACK TO TOP */
+  #back-top { position: fixed; bottom: 20px; right: 20px; z-index: 50; width: 40px; height: 40px; background: #E94560; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; display: none; align-items: center; justify-content: center; }
+  #back-top.show { display: flex; }
+
+  /* MOBILE */
+  #hamburger { display: none; position: fixed; top: 12px; left: 12px; z-index: 60; background: #1A1A2E; color: #fff; border: none; border-radius: 8px; width: 44px; height: 44px; font-size: 1.3rem; cursor: pointer; align-items: center; justify-content: center; }
+  #mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 35; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #hamburger { display: flex; }
+    #mob-overlay.show { display: block; }
+    .hero { padding: 2.5rem 1.5rem; }
+    .section-card { padding: 1.5rem; }
+    .timeline { gap: 0; }
+    .tl-step { min-width: 80px; }
+    .tab-btn { width: 100%; border-radius: 8px; margin-bottom: 4px; }
+    .tab-content { border-radius: 8px; }
+  }
+
+  @media (max-width: 480px) {
+    :root { --fs: 16px; }
+    .section-card { padding: 1.2rem; }
+    .script-box { font-size: 0.9rem; }
+    .stat-number { font-size: 1.6rem; }
+    .hero { padding: 2rem 1.2rem; }
+  }
+
+  /* FADE IN */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* 4F BOX */
+  .f4-step { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .f4-letter { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #E94560; line-height: 1; }
+  .f4-word { font-weight: 700; font-size: 1rem; color: #1A1A2E; }
+  .f4-desc { font-size: 0.85rem; color: #5a6070; margin-top: .3rem; }
+
+  /* WEEKLY CALENDAR */
+  .week-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .week-cal-day { border-radius: 10px; padding: .7rem .3rem; text-align: center; font-size: 0.75rem; font-weight: 600; }
+  .week-cal-day .day-name { font-size: 0.65rem; color: #5a6070; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+  .wc-green { background: #f0fdf4; border: 2px solid #1A7A4A; color: #1A7A4A; }
+  .wc-brown { background: #fdf8f0; border: 2px solid #C47A00; color: #C47A00; }
+  .wc-purple { background: #faf0ff; border: 2px solid #7c3aed; color: #7c3aed; }
+  .wc-pink { background: #fff0f5; border: 2px solid #E94560; color: #E94560; }
+  .wc-gray { background: #f9fafb; border: 2px dashed #e2e8f0; color: #a0aec0; }
+
+  /* MIC BOX */
+  .mic-box { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border-radius: 14px; padding: 1.5rem 2rem; border-left: 5px solid #E94560; }
+
+  /* TOOL CARD */
+  .tool-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; transition: border-color .2s, box-shadow .2s; }
+  .tool-card:hover { border-color: #1A1A2E; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .tool-card.coming { border-color: #C47A00; border-style: dashed; background: #fffbeb; }
+  .tool-icon { font-size: 2.5rem; margin-bottom: .8rem; }
+
+  /* HOME PAGE */
+  #home-page { min-height: 100vh; background: #f5f5f7; }
+  .home-header { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 60%, #0f3460 100%); padding: 3rem 2rem 2.5rem; text-align: center; position: relative; overflow: hidden; }
+  .home-header::before { content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px; background: rgba(233,69,96,.12); border-radius: 50%; }
+  .home-header::after { content: ''; position: absolute; bottom: -60px; left: -60px; width: 250px; height: 250px; background: rgba(233,69,96,.08); border-radius: 50%; }
+  .home-logo { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 1rem; position: relative; z-index: 1; }
+  .home-logo-badge { width: 52px; height: 52px; background: #E94560; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff; font-size: 1.4rem; }
+  .home-logo-text { text-align: left; }
+  .home-logo-name { font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff; font-size: 1.5rem; line-height: 1.1; }
+  .home-logo-sub { color: #a0aec0; font-size: .82rem; }
+  .home-tagline { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .5rem; position: relative; z-index: 1; }
+  .home-sub { color: #a0aec0; font-size: .95rem; position: relative; z-index: 1; }
+
+  /* HOME CARDS GRID */
+  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; padding: 2rem; max-width: 680px; margin: 0 auto; }
+  .home-card { background: #fff; border-radius: 16px; padding: 1.5rem; border: 2px solid #e2e8f0; cursor: pointer; transition: all .2s; text-decoration: none; display: flex; flex-direction: column; gap: .5rem; position: relative; overflow: hidden; }
+  .home-card:hover { border-color: #E94560; box-shadow: 0 8px 24px rgba(233,69,96,.12); transform: translateY(-2px); }
+  .home-card-emoji { font-size: 2.2rem; line-height: 1; }
+  .home-card-cap { font-size: .72rem; font-weight: 700; color: #E94560; text-transform: uppercase; letter-spacing: .08em; }
+  .home-card-title { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.05rem; color: #1A1A2E; line-height: 1.2; }
+  .home-card-desc { font-size: .82rem; color: #5a6070; line-height: 1.4; }
+  .home-card-arrow { position: absolute; bottom: 1.2rem; right: 1.2rem; color: #E94560; font-size: 1.1rem; font-weight: 700; }
+  .home-cta-wrap { text-align: center; padding: 0 2rem 2.5rem; }
+  .home-cta-btn { display: inline-flex; align-items: center; gap: 8px; background: #1A1A2E; color: #fff; padding: 1rem 2rem; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: background .2s; min-height: 44px; }
+  .home-cta-btn:hover { background: #E94560; }
+
+  /* CONTACT SOURCE GRID */
+  .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }
+  .source-card { background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; padding: .9rem; }
+  .source-card-title { font-weight: 700; font-size: .85rem; color: #1A1A2E; margin-bottom: .2rem; }
+  .source-card-desc { font-size: .78rem; color: #5a6070; line-height: 1.4; }
+
+  @media (max-width: 600px) {
+    .home-grid { grid-template-columns: 1fr; gap: 1rem; padding: 1.2rem; }
+    .home-tagline { font-size: 1.4rem; }
+    .source-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 380px) {
+    .source-grid { grid-template-columns: 1fr; }
+  }
+
+  /* RULE BOX */
+  .rule-box { background: linear-gradient(135deg, #1A1A2E, #16213E); border-left: 5px solid #E94560; border-radius: 12px; padding: 1.3rem 1.5rem; color: #fff; margin-bottom: 1rem; }
+  .rule-box-title { font-weight: 700; color: #ff8c69; margin-bottom: .4rem; font-size: .95rem; }
+  .rule-box-text { font-size: .9rem; color: #cbd5e0; line-height: 1.6; }
+
+  /* GOLD BOX */
+  .gold-box { background: #fffbeb; border: 2px solid #C47A00; border-radius: 12px; padding: 1.3rem 1.5rem; }
+
+  /* WARNING BOX */
+  .warn-box { background: #fffbeb; border: 2px solid #C47A00; border-radius: 12px; padding: 1.2rem 1.4rem; display: flex; gap: .8rem; }
+  .warn-box-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .warn-box-text { font-size: .9rem; color: #5a4a00; line-height: 1.6; }
+
+  /* STEP ACCORDION */
+  .step-accordion { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin-bottom: .8rem; }
+  .step-acc-btn { width: 100%; text-align: left; padding: 1.1rem 1.3rem; background: #f8f9fa; font-weight: 700; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: none; font-size: .95rem; font-family: 'Inter', sans-serif; transition: background .2s; min-height: 44px; }
+  .step-acc-btn:hover { background: #eef0f4; }
+  .step-acc-btn.open { background: #1A1A2E; color: #fff; }
+  .step-acc-btn .arrow { transition: transform .3s; }
+  .step-acc-btn.open .arrow { transform: rotate(180deg); }
+  .step-acc-body { display: none; padding: 1.2rem; font-size: .93rem; color: #2d3748; line-height: 1.7; }
+  .step-acc-body.open { display: block; }
+
+  /* ACTION BTN */
+  .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: .75rem 1.3rem; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; border: none; transition: all .2s; min-height: 44px; text-decoration: none; }
+  .action-btn-primary { background: #E94560; color: #fff; }
+  .action-btn-primary:hover { background: #c73652; }
+  .action-btn-dark { background: #1A1A2E; color: #fff; }
+  .action-btn-dark:hover { background: #16213E; }
+  .action-btn-outline { background: #fff; color: #1A1A2E; border: 2px solid #1A1A2E; }
+  .action-btn-outline:hover { background: #f0f2f5; }
+
+  /* OVERRIDE: niente sidebar nei capitoli */
+  #sidebar { display: none !important; }
+  #hamburger { display: none !important; }
+  #main { margin-left: 0 !important; }
+</style>
+</head>
+<body>
+
+<!-- CHAPTER NAV BAR -->
+<div style="background:#1A1A2E;padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:1rem;">
+  <a href="manuale-collaboratore-v2.html" style="color:#E94560;font-weight:700;font-size:.88rem;text-decoration:none;">← Tutti i capitoli</a>
+  <span style="color:#a0aec0;font-size:.8rem;font-family:'Poppins',sans-serif;">Cap. 4 — Obiezioni</span>
+  <a href="cap5-duplicazione.html" style="color:#E94560;font-weight:700;font-size:.88rem;text-decoration:none;">Cap. 5 →</a>
+</div>
+
+<div id="main" style="padding: 1.5rem;">
+<div class="section-card fade-in" id="s-obiezioni">
+  <div style="display:inline-block;background:#fff5f7;border:1px solid rgba(233,69,96,.3);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;font-weight:700;color:#E94560;margin-bottom:1rem;">🛡️ Cap. 4 — Obiezioni</div>
+  <h2 class="section-title">🛡️ Gestione delle Obiezioni</h2>
+
+  <div class="info-card warning" style="margin-bottom:1.5rem;">
+    <p style="color:#5a4a00;font-size:.92rem;line-height:1.7;margin:0;"><strong>Un'obiezione non è un rifiuto: è una richiesta d'aiuto!</strong> Il tuo atteggiamento fa la differenza: non devi convincere nessuno, devi dare le informazioni giuste con calma e sicurezza.</p>
+  </div>
+
+  <!-- 4F -->
+  <div style="margin-bottom:2rem;">
+    <h3 style="font-size:1.1rem;margin-bottom:1rem;color:#1A1A2E;">La Tecnica delle 4F</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+      <div class="f4-step"><div class="f4-letter">F</div><div class="f4-word">Feel</div><div class="f4-desc">Ti capisco... posso immedesimarmi in questo</div></div>
+      <div class="f4-step"><div class="f4-letter">F</div><div class="f4-word">Felt</div><div class="f4-desc">Ecco come mi sentivo anche io all'inizio</div></div>
+      <div class="f4-step"><div class="f4-letter">F</div><div class="f4-word">Found</div><div class="f4-desc">Poi ho scoperto che...</div></div>
+      <div class="f4-step"><div class="f4-letter">F</div><div class="f4-word">Flow</div><div class="f4-desc">Ha senso per te?</div></div>
+    </div>
+  </div>
+
+  <!-- OBIEZIONI PRODOTTO -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">🛍️ Obiezioni sui Prodotti</h3>
+  <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:2rem;">
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">💰 "È troppo caro / Costa troppo" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="op1">Ti capisco perfettamente. Quando ho aperto il mio negozio online ho dovuto scegliere: far risparmiare offrendo prodotti mediocri o scegliere la vera qualità per dare risultati reali. Ho scelto la qualità.
+
+Il trattamento dura 3 mesi: stiamo parlando di circa 1,50€ al giorno. Praticamente meno di un caffè al bar per riavere i capelli che ami o una pelle radiosa. Vale la pena rinunciare a un caffè al giorno per smettere di vederti spenta ogni mattina allo specchio?
+
+Se il prezzo è ancora un punto fermo:
+→ Opzione 1: "Se riuscissi a venirti incontro con uno sconto del 15%, riusciremo a procedere?"
+→ Opzione 2: "Test Drive" — inizia con un solo prodotto base per verificare la qualità con mano.
+
+Dopo aver fatto l'offerta, fermati. Lascia che sia la persona a rispondere per prima.</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('op1', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">🤔 "E se su di me non funziona? / Ne ho provate tante" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="op2">Comprendo benissimo il tuo scetticismo. È frustrante spendere soldi e tempo senza vedere i cambiamenti promessi.
+
+Questa linea non si basa solo sul passaparola, ma su test clinici rigorosi che dimostrano risultati evidenti in sole 4 settimane. Su un campione reale di persone, la pelle è risultata visibilmente più idratata, rimpolpata e luminosa dopo un solo ciclo.
+
+Inoltre, l'azienda è così sicura dei risultati che offre una Garanzia "Soddisfatti o Rimborsati" di 3 mesi. Se dopo 90 giorni non vedi la trasformazione desiderata, ti viene restituito l'intero importo.
+
+Cosa hai da perdere nel provare un sistema scientifico che, male che vada, ti restituisce i soldi spesi?</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('op2', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">😰 "Ho paura di controindicazioni / Non mi fido" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="op3">È un dubbio giustissimo, la salute viene prima di tutto e apprezzo la tua attenzione.
+
+Il programma segue uno standard olimpico. È inserito nella Cologne List®, che garantisce la massima purezza, l'assenza di sostanze dopanti e di ingredienti nascosti. Collaboriamo con medici, nutrizionisti e ricercatori che hanno sviluppato questi protocolli per garantire sicurezza ed efficacia reale.
+
+Se vuoi, posso inviarti le schede tecniche da mostrare al tuo medico.
+
+NON SONO UN MEDICO — ma ho provato questo prodotto sulla mia pelle e ho visto i risultati in prima persona. Il mio ruolo è presentarti le caratteristiche e rispondere alle tue domande. Per qualsiasi dubbio medico, consulta il tuo medico di fiducia.</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('op3', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">🏪 "Preferisco comprare in negozio / Uso prodotti da supermercato" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="op4">Ti capisco, il negozio fisico dà una sensazione di familiarità immediata.
+
+In negozio paghi i costi fissi della struttura e della distribuzione. Qui, invece, l'azienda investe tutto sulla qualità degli attivi. Hai anche un consulente dedicato che ti segue passo dopo passo per garantirti il risultato.
+
+Ad esempio: una crema clinica applicata senza la corretta preparazione della pelle ha un assorbimento minimo — le cellule morte bloccano l'accesso. In negozio nessuno te lo dice. Qui sì.
+
+Preferisci un prodotto da scaffale senza assistenza o un percorso assistito che ti garantisce il massimo risultato?</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('op4', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">⏳ "Ci devo pensare / Ne parlo con mio marito" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="op5">Certamente, è giusto rifletterci bene! Ma dimmi una cosa: cosa non ti convince del tutto? È un dubbio sul prezzo o hai bisogno di maggiori informazioni tecniche?
+
+(Ascolta la risposta e isola il dubbio reale.)
+
+Se l'interesse c'è: "Quindi mi stai dicendo che la cosa potrebbe interessarti? Allora riflettiamo insieme... cosa ti impedisce di prendere una buona decisione per te adesso?"
+
+Se hai un budget limitato: "Qual è il budget che avevi previsto? È un buon punto di partenza. Ti è mai capitato di spendere un po' più del previsto per avere la certezza del risultato?"
+
+LA DOMANDA DA CECCHINO: "Se dovessi dare un voto da 1 a 10, dove 1 indica zero interesse e 10 indica voglio iniziare ora, che voto ti daresti?" Se il voto è 7: "Cosa ti manca per arrivare a 10?"</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('op5', this)">📋 Copia risposta</button>
+    </div>
+  </div>
+
+  <!-- OBIEZIONI BUSINESS -->
+  <h3 style="font-size:1.1rem;margin-bottom:.8rem;color:#1A1A2E;">💼 Obiezioni sul Business</h3>
+  <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem;">
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">⏰ "Non ho tempo" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob1">Ti capisco, il tempo è prezioso per tutti. Proprio per questo il progetto è pensato per essere gestibile: si può partire anche con poco tempo senza stravolgere la tua routine. Ha senso per te approfondire come incastrarlo nei tuoi impegni, invece di escludere l'opportunità a priori?</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob1', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">🤔 "È network marketing?" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob2">Esatto, utilizziamo l'evoluzione di quel sistema — che noi chiamiamo Softmarketing. Abbiamo scelto questo nome perché mettiamo al centro le esigenze della persona, senza strategie aggressive. Siamo guidati da veri professionisti e ti assicuro che nel nostro progetto troverai qualcosa di nuovo: un metodo innovativo che garantisce risultati nei primi 30 giorni. Fidati, guarda la presentazione completa e poi mi dici cosa ne pensi. Facciamo così?</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob2', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">💸 "Costa troppo iniziare" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob3">Capisco, il prezzo è sempre una considerazione importante. Posso chiederti cosa intendi con "troppo"? In che senso — rispetto al tuo budget attuale, o rispetto a quello che pensi di ottenere? Perché se ti spiego cosa ottieni in cambio, potrebbe cambiare la prospettiva. Posso mostrarti i numeri?</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob3', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">😟 "Non ho i contatti giusti" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob4">Anche io la pensavo così all'inizio — e invece ho scoperto che i "contatti giusti" non esistono. Non puoi sapere chi è interessato finché non glielo chiedi. Le persone più impensabili sono spesso quelle che acquistano di più. Il sistema ti dà tutti gli strumenti per arrivare a 100-200 persone anche se oggi ti sembrano poche. Vuoi scoprire come?</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob4', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">🤷 "Devo pensarci" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob5">Certo, è giusto rifletterci. Posso chiederti su cosa in particolare vorresti pensare? A volte c'è un dubbio specifico sotto a quella frase — se me lo dici, posso darti le informazioni giuste e la riflessione diventa molto più facile.</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob5', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">😨 "Ho paura del giudizio degli altri" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob6">Ti capisco, ci sono passata/o anch'io. Ma ti dico una cosa: il parere degli altri è passeggero. I risultati che costruirai oggi saranno la tua realtà di domani. E sai cosa? Le stesse persone che oggi ti giudicano, domani ti chiederanno come hai fatto.</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob6', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">😓 "Non so vendere / Non sono capace" <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="ob7">Perfetto — questo sistema è fatto apposta per persone che non sanno vendere. Non dovrai vendere: seguirai un metodo già pronto, passo dopo passo. Lo sponsor è lì per te finché impari. E ricorda: il successo non dipende da quanto sei bravo a parlare, ma da quanto sei fedele al sistema.</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('ob7', this)">📋 Copia risposta</button>
+    </div>
+  </div>
+
+  <p style="font-size:.9rem;color:#5a6070;font-style:italic;margin-bottom:1rem;">Non fermarti al primo no. Chiedi sempre supporto alla tua guida di riferimento!</p>
+  <div style="display:flex;flex-wrap:wrap;gap:.8rem;">
+    <button class="action-btn action-btn-primary" onclick="alert('Trovi il link al chatbot su Telegram')">🤖 Chiedi all'Assistente AI — risponde 24/7</button>
+    <button class="action-btn action-btn-dark" onclick="alert('Trovi il documento nel Topic Obiezioni su Telegram')">📄 Scarica la guida completa Obiezioni →</button>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER NAV -->
+<div style="background:#1A1A2E;margin-top:2rem;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;">
+  <a href="manuale-collaboratore-v2.html" style="color:#a0aec0;font-size:.85rem;text-decoration:none;">← Torna al Manuale Completo</a>
+  <span style="color:#a0aec0;font-size:.78rem;">© BlooMIND — Riservato ai collaboratori</span>
+</div>
+
+<script>
+
+// ============ HOME / MANUAL TOGGLE ============
+function showManual(){}
+
+function goHome(){}
+
+// ============ SIDEBAR SCROLL SPY ============
+const allSections = [
+  's-startup-welcome','s-startup-filosofia','s-startup-passi',
+  's-inau-panoramica','s-inau-lista','s-inau-invito','s-inau-business','s-inau-giorno7','s-inau-followup',
+  's-contatti-offline','s-contatti-online',
+  's-obiezioni',
+  's-duplicazione',
+  's-pro-esercitazione','s-pro-academy'
+];
+
+function navTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const offset = 20;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({top: top, behavior: 'smooth'});
+  }
+  if (window.innerWidth <= 768) toggleSidebar(false);
+  updateActiveNav(id);
+  return false;
+}
+
+function updateActiveNav(current) {
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    const onclick = item.getAttribute('onclick') || '';
+    const match = onclick.match(/navTo\('([^']+)'\)/);
+    if (match) {
+      item.classList.toggle('active', match[1] === current);
+    }
+  });
+}
+
+window.addEventListener('scroll', function() {
+  if (document.getElementById('main').style.display === 'none') return;
+  const scrollY = window.pageYOffset;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  if (docH > 0) {
+    const pct = Math.round((scrollY / docH) * 100);
+    const pb = document.getElementById('progress-bar');
+    const pl = document.getElementById('progress-label');
+    if (pb) pb.style.width = pct + '%';
+    if (pl) pl.textContent = pct + '% completato';
+  }
+
+  let current = allSections[0];
+  allSections.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 80) current = id;
+  });
+  updateActiveNav(current);
+
+  const bt = document.getElementById('back-top');
+  if (bt) bt.classList.toggle('show', scrollY > 400);
+
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(function(el) {
+    if (el.getBoundingClientRect().top < window.innerHeight - 60) el.classList.add('visible');
+  });
+});
+
+function initFadeIn() {
+  document.querySelectorAll('.fade-in').forEach(function(el) {
+    if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+  });
+}
+
+// ============ MOBILE SIDEBAR ============
+function toggleSidebar(){}
+
+// ============ NAV SECTION COLLAPSE ============
+function toggleNavSection(){}
+
+// ============ ACCORDION ============
+function toggleAcc(btn) {
+  const content = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  content.classList.toggle('open', !wasOpen);
+}
+
+function toggleStepAcc(btn) {
+  const body = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  body.classList.toggle('open', !wasOpen);
+}
+
+// ============ TABS ============
+function openTabGroup(group, tabId, btn) {
+  // Close all tabs with ids starting with group prefix
+  document.querySelectorAll('[id^="' + group + '"]').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  // Remove active from sibling tab buttons
+  if (btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+}
+
+// ============ TOGGLE INVITO SCRIPT ============
+function toggleInvScript(type) {
+  const s1 = document.getElementById('script-inv1');
+  const s2 = document.getElementById('script-inv2');
+  const b1 = document.getElementById('tog-inv1');
+  const b2 = document.getElementById('tog-inv2');
+  if (type === 'inv1') {
+    s1.style.display = 'block'; s2.style.display = 'none';
+    b1.classList.add('active'); b2.classList.remove('active');
+  } else {
+    s2.style.display = 'block'; s1.style.display = 'none';
+    b2.classList.add('active'); b1.classList.remove('active');
+  }
+}
+
+// ============ COPY SCRIPT (reads .script-box text content) ============
+function copyScript(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+  const doFeedback = function(b) {
+    if (!b) return;
+    const orig = b.innerHTML;
+    b.innerHTML = '✓ Copiato!';
+    b.classList.add('copied');
+    setTimeout(function() { b.innerHTML = orig; b.classList.remove('copied'); }, 2000);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() { doFeedback(btn); });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    doFeedback(btn);
+  }
+}
+
+// ============ CHECKLIST ============
+function saveChecks() {
+  const state = {};
+  for (let i=1; i<=9; i++) {
+    const el = document.getElementById('g'+i);
+    if (el) state['g'+i] = el.checked;
+  }
+  localStorage.setItem('bloomind_checklist_v2', JSON.stringify(state));
+}
+function loadChecks() {
+  const saved = localStorage.getItem('bloomind_checklist_v2');
+  if (saved) {
+    const state = JSON.parse(saved);
+    for (let i=1; i<=9; i++) {
+      const el = document.getElementById('g'+i);
+      if (el) el.checked = state['g'+i] || false;
+    }
+  }
+}
+function resetChecks() {
+  for (let i=1; i<=9; i++) {
+    const el = document.getElementById('g'+i);
+    if (el) el.checked = false;
+  }
+  localStorage.removeItem('bloomind_checklist_v2');
+}
+
+// ============ SLIDER CALCOLATORE ============
+function calcResult(val) {
+  val = parseInt(val);
+  document.getElementById('slider-val').textContent = val;
+  const conferme = Math.round(val * 0.35);
+  const presenti = Math.round(val * 0.22);
+  const guadagno = presenti * 20;
+  document.getElementById('res-conferme').textContent = conferme;
+  document.getElementById('res-presenti').textContent = presenti;
+  document.getElementById('res-guadagno').textContent = guadagno + '€';
+}
+
+// ============ FONT CONTROL ============
+const fontSizes = [16, 18, 22];
+let currentFS = 1;
+function changeFont(dir) {
+  if (dir === 0) currentFS = 1;
+  else currentFS = Math.max(0, Math.min(2, currentFS + dir));
+  document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  localStorage.setItem('bloomind_fs', currentFS);
+}
+(function loadFS() {
+  const saved = localStorage.getItem('bloomind_fs');
+  if (saved !== null) {
+    currentFS = parseInt(saved);
+    document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  }
+})();
+
+// ============ COUNTER ANIMATION ============
+function animateCounter(id, target, suffix) {
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const el = document.getElementById(id);
+  if (!el) return;
+  const timer = setInterval(function() {
+    current = Math.min(current + step, target);
+    el.textContent = current + (suffix || '');
+    if (current >= target) clearInterval(timer);
+  }, 30);
+}
+
+const heroObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      animateCounter('cnt1', 98, '%');
+      animateCounter('cnt2', 300, '€');
+      heroObserver.disconnect();
+    }
+  });
+}, {threshold: 0.3});
+
+// Observer attivato solo quando il main è visibile
+function setupHeroObserver() {
+  const hero = document.getElementById('s-startup-welcome');
+  if (hero) heroObserver.observe(hero);
+}
+
+// ============ SCROLL TO TOP ============
+function scrollToTop() {
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ============ MODAL ============
+function openModal(title, body) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ============ INIT ============
+loadChecks();
+// showManual si chiama dai link home — non si mostra niente all'avvio
+
+</script>
+</body>
+</html>

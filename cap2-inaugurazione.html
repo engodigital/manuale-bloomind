@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inaugurazione — BlooMIND</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#1A1A2E',accent:'#E94560',secondary:'#16213E',success:'#1A7A4A',warning:'#C47A00'},fontFamily:{sans:['Inter','sans-serif'],heading:['Poppins','sans-serif']}}}}</script>
+<style>
+
+  :root { --fs: 18px; }
+  html { font-size: var(--fs); scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; color: #1A1A2E; background: #f5f5f7; }
+  h1,h2,h3,h4 { font-family: 'Poppins', sans-serif; }
+
+  /* SIDEBAR */
+  #sidebar { width: 260px; min-width: 260px; background: #1A1A2E; height: 100vh; position: fixed; top: 0; left: 0; overflow-y: auto; z-index: 40; transition: transform .3s; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: #E94560; border-radius: 2px; }
+  .nav-section-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px 6px; color: #E94560; font-size: 0.78rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: .05em; border-left: 3px solid transparent; transition: all .2s; }
+  .nav-section-header:hover { background: rgba(255,255,255,.04); }
+  .nav-section-header .nav-arrow { transition: transform .3s; font-size: .7rem; }
+  .nav-section-header.collapsed .nav-arrow { transform: rotate(-90deg); }
+  .nav-sub { overflow: hidden; max-height: 500px; transition: max-height .3s ease; }
+  .nav-sub.collapsed { max-height: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px 9px 32px; color: #a0aec0; font-size: 0.8rem; cursor: pointer; border-left: 3px solid transparent; transition: all .2s; text-decoration: none; }
+  .nav-item:hover { color: #fff; background: rgba(255,255,255,.05); }
+  .nav-item.active { color: #E94560; border-left-color: #E94560; background: rgba(233,69,96,.1); }
+  .nav-progress { height: 3px; background: linear-gradient(to right, #E94560, #ff8c69); transition: width .3s; }
+
+  /* MAIN CONTENT */
+  #main { margin-left: 260px; min-height: 100vh; }
+  .section-card { background: #fff; border-radius: 16px; padding: 2.5rem; margin-bottom: 2rem; box-shadow: 0 2px 16px rgba(0,0,0,.06); }
+  .section-title { font-size: 1.8rem; color: #1A1A2E; margin-bottom: 0.5rem; }
+  .section-subtitle { color: #5a6070; font-size: 1rem; margin-bottom: 2rem; }
+
+  /* HERO */
+  .hero { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 50%, #0f3460 100%); color: #fff; border-radius: 16px; padding: 4rem 3rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; background: rgba(233,69,96,.15); border-radius: 50%; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; left: -40px; width: 200px; height: 200px; background: rgba(233,69,96,.1); border-radius: 50%; }
+  .stat-card { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 12px; padding: 1.2rem 1.5rem; text-align: center; backdrop-filter: blur(10px); }
+  .stat-number { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #E94560; }
+
+  /* ACCORDION */
+  .accordion-btn { width: 100%; text-align: left; padding: 1rem 1.2rem; background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; font-weight: 600; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all .2s; font-size: 0.95rem; }
+  .accordion-btn:hover { background: #eef0f4; }
+  .accordion-btn.open { background: #1A1A2E; color: #fff; border-color: #1A1A2E; border-radius: 10px 10px 0 0; }
+  .accordion-btn .arrow { transition: transform .3s; font-size: 1.1rem; }
+  .accordion-btn.open .arrow { transform: rotate(180deg); }
+  .accordion-content { border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px; padding: 1.2rem; background: #fff; display: none; color: #2d3748; font-size: 0.95rem; line-height: 1.7; }
+  .accordion-content.open { display: block; }
+
+  /* TABS */
+  .tab-btn { padding: .7rem 1.4rem; border-radius: 8px 8px 0 0; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: 2px solid transparent; color: #5a6070; background: #f0f2f5; transition: all .2s; }
+  .tab-btn.active { background: #1A1A2E; color: #fff; border-color: #1A1A2E; }
+  .tab-content { display: none; padding: 1.5rem; background: #fff; border: 2px solid #1A1A2E; border-radius: 0 8px 8px 8px; }
+  .tab-content.active { display: block; }
+
+  /* TOGGLE */
+  .toggle-btn { padding: .6rem 1.2rem; border-radius: 30px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 2px solid #1A1A2E; color: #1A1A2E; background: #fff; transition: all .2s; }
+  .toggle-btn.active { background: #1A1A2E; color: #fff; }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal-box { background: #fff; border-radius: 16px; padding: 2rem; max-width: 560px; width: 100%; position: relative; max-height: 85vh; overflow-y: auto; }
+  .modal-box h3 { font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: #1A1A2E; margin-bottom: 1rem; }
+  .script-text { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1rem; font-size: 0.9rem; line-height: 1.7; color: #2d3748; white-space: pre-wrap; }
+
+  /* COPY BUTTON */
+  .copy-btn { display: inline-flex; align-items: center; gap: 6px; padding: .5rem 1rem; background: #E94560; color: #fff; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; transition: all .2s; min-height: 44px; }
+  .copy-btn:hover { background: #c73652; }
+  .copy-btn.copied { background: #1A7A4A; }
+
+  /* SCRIPT BOX */
+  .script-box { background: #f8f9fa; border-left: 4px solid #E94560; border-radius: 8px; padding: 1.2rem; font-size: 0.92rem; line-height: 1.8; color: #2d3748; position: relative; white-space: pre-wrap; }
+  .script-title { font-weight: 700; color: #E94560; font-size: 0.82rem; text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; }
+
+  /* CHECKLIST */
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .check-item input[type=checkbox] { width: 20px; height: 20px; accent-color: #1A7A4A; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .check-item label { cursor: pointer; font-size: 0.95rem; line-height: 1.5; color: #2d3748; }
+  .check-item input:checked + label { text-decoration: line-through; color: #a0aec0; }
+
+  /* VISUAL CHECKLIST */
+  .vis-check { display: flex; align-items: flex-start; gap: 12px; padding: .8rem 0; border-bottom: 1px solid #f0f2f5; }
+  .vis-check-icon { width: 24px; height: 24px; background: #1A7A4A; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: .85rem; flex-shrink: 0; margin-top: 2px; }
+  .vis-check span { font-size: 0.93rem; line-height: 1.5; color: #2d3748; }
+
+  /* TIMELINE */
+  .timeline { display: flex; gap: 0; overflow-x: auto; padding: 1.5rem 0; }
+  .tl-step { flex: 1; min-width: 100px; text-align: center; position: relative; cursor: pointer; }
+  .tl-step::after { content: ''; position: absolute; top: 20px; left: 60%; width: 80%; height: 3px; background: #e2e8f0; z-index: 0; }
+  .tl-step:last-child::after { display: none; }
+  .tl-dot { width: 42px; height: 42px; border-radius: 50%; background: #e2e8f0; border: 3px solid #e2e8f0; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 800; font-size: 0.9rem; color: #5a6070; position: relative; z-index: 1; transition: all .3s; }
+  .tl-step.active .tl-dot { background: #E94560; border-color: #E94560; color: #fff; }
+  .tl-step.done .tl-dot { background: #1A7A4A; border-color: #1A7A4A; color: #fff; }
+  .tl-label { font-size: 0.75rem; font-weight: 600; color: #5a6070; line-height: 1.3; }
+  .tl-step.active .tl-label { color: #E94560; }
+
+  /* INFO CARDS */
+  .info-card { background: #f8f9fa; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; }
+  .info-card.accent { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border: none; }
+  .info-card.success { background: #f0fdf4; border-color: #1A7A4A; }
+  .info-card.warning { background: #fffbeb; border-color: #C47A00; }
+  .info-card.danger { background: #fff5f7; border-color: #E94560; }
+
+  /* SLIDER */
+  input[type=range] { accent-color: #E94560; width: 100%; height: 6px; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+  .badge-red { background: #fff5f7; color: #E94560; border: 1px solid #E94560; }
+  .badge-green { background: #f0fdf4; color: #1A7A4A; border: 1px solid #1A7A4A; }
+  .badge-coming { background: #fefce8; color: #854d0e; border: 1px solid #C47A00; }
+
+  /* STEP FLOW */
+  .step-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .step-pill { background: #1A1A2E; color: #fff; padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; }
+  .step-arrow { color: #E94560; font-size: 1.2rem; font-weight: 700; }
+
+  /* FONT CONTROL */
+  #font-ctrl { position: fixed; bottom: 80px; right: 20px; z-index: 50; display: flex; flex-direction: column; gap: 6px; }
+  .fc-btn { width: 40px; height: 40px; background: #1A1A2E; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+  .fc-btn:hover { background: #E94560; }
+  .fc-label { text-align: center; font-size: 0.7rem; color: #5a6070; font-weight: 600; }
+
+  /* BACK TO TOP */
+  #back-top { position: fixed; bottom: 20px; right: 20px; z-index: 50; width: 40px; height: 40px; background: #E94560; color: #fff; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; display: none; align-items: center; justify-content: center; }
+  #back-top.show { display: flex; }
+
+  /* MOBILE */
+  #hamburger { display: none; position: fixed; top: 12px; left: 12px; z-index: 60; background: #1A1A2E; color: #fff; border: none; border-radius: 8px; width: 44px; height: 44px; font-size: 1.3rem; cursor: pointer; align-items: center; justify-content: center; }
+  #mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 35; }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    #hamburger { display: flex; }
+    #mob-overlay.show { display: block; }
+    .hero { padding: 2.5rem 1.5rem; }
+    .section-card { padding: 1.5rem; }
+    .timeline { gap: 0; }
+    .tl-step { min-width: 80px; }
+    .tab-btn { width: 100%; border-radius: 8px; margin-bottom: 4px; }
+    .tab-content { border-radius: 8px; }
+  }
+
+  @media (max-width: 480px) {
+    :root { --fs: 16px; }
+    .section-card { padding: 1.2rem; }
+    .script-box { font-size: 0.9rem; }
+    .stat-number { font-size: 1.6rem; }
+    .hero { padding: 2rem 1.2rem; }
+  }
+
+  /* FADE IN */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity .5s, transform .5s; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* 4F BOX */
+  .f4-step { background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.2rem; text-align: center; }
+  .f4-letter { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: #E94560; line-height: 1; }
+  .f4-word { font-weight: 700; font-size: 1rem; color: #1A1A2E; }
+  .f4-desc { font-size: 0.85rem; color: #5a6070; margin-top: .3rem; }
+
+  /* WEEKLY CALENDAR */
+  .week-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .week-cal-day { border-radius: 10px; padding: .7rem .3rem; text-align: center; font-size: 0.75rem; font-weight: 600; }
+  .week-cal-day .day-name { font-size: 0.65rem; color: #5a6070; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .05em; }
+  .wc-green { background: #f0fdf4; border: 2px solid #1A7A4A; color: #1A7A4A; }
+  .wc-brown { background: #fdf8f0; border: 2px solid #C47A00; color: #C47A00; }
+  .wc-purple { background: #faf0ff; border: 2px solid #7c3aed; color: #7c3aed; }
+  .wc-pink { background: #fff0f5; border: 2px solid #E94560; color: #E94560; }
+  .wc-gray { background: #f9fafb; border: 2px dashed #e2e8f0; color: #a0aec0; }
+
+  /* MIC BOX */
+  .mic-box { background: linear-gradient(135deg, #1A1A2E, #16213E); color: #fff; border-radius: 14px; padding: 1.5rem 2rem; border-left: 5px solid #E94560; }
+
+  /* TOOL CARD */
+  .tool-card { background: #fff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; transition: border-color .2s, box-shadow .2s; }
+  .tool-card:hover { border-color: #1A1A2E; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .tool-card.coming { border-color: #C47A00; border-style: dashed; background: #fffbeb; }
+  .tool-icon { font-size: 2.5rem; margin-bottom: .8rem; }
+
+  /* HOME PAGE */
+  #home-page { min-height: 100vh; background: #f5f5f7; }
+  .home-header { background: linear-gradient(135deg, #1A1A2E 0%, #16213E 60%, #0f3460 100%); padding: 3rem 2rem 2.5rem; text-align: center; position: relative; overflow: hidden; }
+  .home-header::before { content: ''; position: absolute; top: -80px; right: -80px; width: 300px; height: 300px; background: rgba(233,69,96,.12); border-radius: 50%; }
+  .home-header::after { content: ''; position: absolute; bottom: -60px; left: -60px; width: 250px; height: 250px; background: rgba(233,69,96,.08); border-radius: 50%; }
+  .home-logo { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 1rem; position: relative; z-index: 1; }
+  .home-logo-badge { width: 52px; height: 52px; background: #E94560; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff; font-size: 1.4rem; }
+  .home-logo-text { text-align: left; }
+  .home-logo-name { font-family: 'Poppins', sans-serif; font-weight: 800; color: #fff; font-size: 1.5rem; line-height: 1.1; }
+  .home-logo-sub { color: #a0aec0; font-size: .82rem; }
+  .home-tagline { font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: .5rem; position: relative; z-index: 1; }
+  .home-sub { color: #a0aec0; font-size: .95rem; position: relative; z-index: 1; }
+
+  /* HOME CARDS GRID */
+  .home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; padding: 2rem; max-width: 680px; margin: 0 auto; }
+  .home-card { background: #fff; border-radius: 16px; padding: 1.5rem; border: 2px solid #e2e8f0; cursor: pointer; transition: all .2s; text-decoration: none; display: flex; flex-direction: column; gap: .5rem; position: relative; overflow: hidden; }
+  .home-card:hover { border-color: #E94560; box-shadow: 0 8px 24px rgba(233,69,96,.12); transform: translateY(-2px); }
+  .home-card-emoji { font-size: 2.2rem; line-height: 1; }
+  .home-card-cap { font-size: .72rem; font-weight: 700; color: #E94560; text-transform: uppercase; letter-spacing: .08em; }
+  .home-card-title { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.05rem; color: #1A1A2E; line-height: 1.2; }
+  .home-card-desc { font-size: .82rem; color: #5a6070; line-height: 1.4; }
+  .home-card-arrow { position: absolute; bottom: 1.2rem; right: 1.2rem; color: #E94560; font-size: 1.1rem; font-weight: 700; }
+  .home-cta-wrap { text-align: center; padding: 0 2rem 2.5rem; }
+  .home-cta-btn { display: inline-flex; align-items: center; gap: 8px; background: #1A1A2E; color: #fff; padding: 1rem 2rem; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; transition: background .2s; min-height: 44px; }
+  .home-cta-btn:hover { background: #E94560; }
+
+  /* CONTACT SOURCE GRID */
+  .source-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; }
+  .source-card { background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 10px; padding: .9rem; }
+  .source-card-title { font-weight: 700; font-size: .85rem; color: #1A1A2E; margin-bottom: .2rem; }
+  .source-card-desc { font-size: .78rem; color: #5a6070; line-height: 1.4; }
+
+  @media (max-width: 600px) {
+    .home-grid { grid-template-columns: 1fr; gap: 1rem; padding: 1.2rem; }
+    .home-tagline { font-size: 1.4rem; }
+    .source-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 380px) {
+    .source-grid { grid-template-columns: 1fr; }
+  }
+
+  /* RULE BOX */
+  .rule-box { background: linear-gradient(135deg, #1A1A2E, #16213E); border-left: 5px solid #E94560; border-radius: 12px; padding: 1.3rem 1.5rem; color: #fff; margin-bottom: 1rem; }
+  .rule-box-title { font-weight: 700; color: #ff8c69; margin-bottom: .4rem; font-size: .95rem; }
+  .rule-box-text { font-size: .9rem; color: #cbd5e0; line-height: 1.6; }
+
+  /* GOLD BOX */
+  .gold-box { background: #fffbeb; border: 2px solid #C47A00; border-radius: 12px; padding: 1.3rem 1.5rem; }
+
+  /* WARNING BOX */
+  .warn-box { background: #fffbeb; border: 2px solid #C47A00; border-radius: 12px; padding: 1.2rem 1.4rem; display: flex; gap: .8rem; }
+  .warn-box-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .warn-box-text { font-size: .9rem; color: #5a4a00; line-height: 1.6; }
+
+  /* STEP ACCORDION */
+  .step-accordion { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; margin-bottom: .8rem; }
+  .step-acc-btn { width: 100%; text-align: left; padding: 1.1rem 1.3rem; background: #f8f9fa; font-weight: 700; color: #1A1A2E; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: none; font-size: .95rem; font-family: 'Inter', sans-serif; transition: background .2s; min-height: 44px; }
+  .step-acc-btn:hover { background: #eef0f4; }
+  .step-acc-btn.open { background: #1A1A2E; color: #fff; }
+  .step-acc-btn .arrow { transition: transform .3s; }
+  .step-acc-btn.open .arrow { transform: rotate(180deg); }
+  .step-acc-body { display: none; padding: 1.2rem; font-size: .93rem; color: #2d3748; line-height: 1.7; }
+  .step-acc-body.open { display: block; }
+
+  /* ACTION BTN */
+  .action-btn { display: inline-flex; align-items: center; gap: 8px; padding: .75rem 1.3rem; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; border: none; transition: all .2s; min-height: 44px; text-decoration: none; }
+  .action-btn-primary { background: #E94560; color: #fff; }
+  .action-btn-primary:hover { background: #c73652; }
+  .action-btn-dark { background: #1A1A2E; color: #fff; }
+  .action-btn-dark:hover { background: #16213E; }
+  .action-btn-outline { background: #fff; color: #1A1A2E; border: 2px solid #1A1A2E; }
+  .action-btn-outline:hover { background: #f0f2f5; }
+
+  /* OVERRIDE: niente sidebar nei capitoli */
+  #sidebar { display: none !important; }
+  #hamburger { display: none !important; }
+  #main { margin-left: 0 !important; }
+</style>
+</head>
+<body>
+
+<!-- CHAPTER NAV BAR -->
+<div style="background:#1A1A2E;padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:1rem;">
+  <a href="manuale-collaboratore-v2.html" style="color:#E94560;font-weight:700;font-size:.88rem;text-decoration:none;">← Tutti i capitoli</a>
+  <span style="color:#a0aec0;font-size:.8rem;font-family:'Poppins',sans-serif;">Cap. 2 — Inaugurazione</span>
+  <a href="cap3-contatti.html" style="color:#E94560;font-weight:700;font-size:.88rem;text-decoration:none;">Cap. 3 →</a>
+</div>
+
+<div id="main" style="padding: 1.5rem;">
+<div class="section-card fade-in" id="s-inau-panoramica">
+  <div style="display:inline-block;background:#fff5f7;border:1px solid rgba(233,69,96,.3);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;font-weight:700;color:#E94560;margin-bottom:1rem;">🎀 Cap. 2 — Inaugurazione</div>
+  <h2 class="section-title">Panoramica dei 7 Giorni</h2>
+  <p class="section-subtitle">Il tuo lancio ufficiale si chiama <strong>Inaugurazione</strong>. Dura 7 giorni di preparazione + l'evento + il follow-up.</p>
+
+  <div class="timeline" style="margin-bottom:2rem;">
+    <div class="tl-step done" onclick="navTo('s-inau-lista')">
+      <div class="tl-dot">1</div>
+      <div class="tl-label">Lista<br>Nomi</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s-inau-invito')">
+      <div class="tl-dot">2</div>
+      <div class="tl-label">Invito<br>G.2</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s-inau-invito')">
+      <div class="tl-dot">3</div>
+      <div class="tl-label">Invito<br>G.3</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s-inau-invito')">
+      <div class="tl-dot">4</div>
+      <div class="tl-label">Invito<br>G.4</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s-inau-invito')">
+      <div class="tl-dot">5</div>
+      <div class="tl-label">Invito<br>G.5</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s-inau-invito')">
+      <div class="tl-dot">6</div>
+      <div class="tl-label">Remind<br>G.6</div>
+    </div>
+    <div class="tl-step active" onclick="navTo('s-inau-giorno7')">
+      <div class="tl-dot">7</div>
+      <div class="tl-label">🎀 Grande<br>Giorno</div>
+    </div>
+    <div class="tl-step" onclick="navTo('s-inau-followup')">
+      <div class="tl-dot">→</div>
+      <div class="tl-label">Follow-Up<br>24h</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+    <div class="info-card" style="border-left:4px solid #1d4ed8;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:.5rem;">Giorno 1</div>
+      <div style="font-size:.9rem;color:#4a5568;">Scrivi la tua lista di almeno <strong>100-200 persone</strong>. Non escludere nessuno.</div>
+    </div>
+    <div class="info-card" style="border-left:4px solid #7c3aed;">
+      <div style="font-weight:700;color:#7c3aed;margin-bottom:.5rem;">Giorni 2-6</div>
+      <div style="font-size:.9rem;color:#4a5568;">Telefonate ai più caldi, <strong>audio personalizzati</strong> a tutti gli altri.</div>
+    </div>
+    <div class="info-card" style="border-left:4px solid #E94560;">
+      <div style="font-weight:700;color:#E94560;margin-bottom:.5rem;">Giorno 7</div>
+      <div style="font-size:.9rem;color:#4a5568;">L'evento su Zoom. Tu accogli, lo sponsor presenta. Il tuo <strong>taglio del nastro</strong>.</div>
+    </div>
+    <div class="info-card" style="border-left:4px solid #1A7A4A;">
+      <div style="font-weight:700;color:#1A7A4A;margin-bottom:.5rem;">Post-Evento</div>
+      <div style="font-size:.9rem;color:#4a5568;">Il follow-up entro <strong>24 ore</strong>. Qui avviene l'80% delle conversioni.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-card fade-in" id="s-inau-lista">
+  <h2 class="section-title">📝 Giorno 1 — La Tua Lista Nomi</h2>
+
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.2rem;">Oggi costruisci la lista delle persone che inviterai alla tua inaugurazione: punta ad almeno 100-200 nomi.</p>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.2rem;">Pensa a questo: se avessi investito 100.000€ per aprire un negozio fisico, chi inviteresti? Solo i 10 amici più stretti o chiunque conosci?</p>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.2rem;">Quando apri qualcosa di nuovo, il mondo deve saperlo. Parenti, amici, conoscenti, colleghi di 10 anni fa — chiunque. Non esistono persone giuste o sbagliate da invitare. Esiste solo una regola: più persone sanno che hai aperto, più il tuo negozio esiste.</p>
+  <div class="info-card success" style="margin-bottom:1.5rem;">
+    <p style="color:#2d5a3d;font-size:.92rem;line-height:1.7;margin:0;">I numeri sono dalla tua parte: su 100 invitati avrai circa 30-40 conferme e 20-25 presenti. Chi ha fatto inaugurazioni con 20-25 ospiti ha guadagnato in media <strong>300-500€</strong>.</p>
+  </div>
+
+  <!-- CALCOLATORE -->
+  <div style="background:#f8f9fa;border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;border:1px solid #e2e8f0;">
+    <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:1rem;">🧮 Il tuo calcolatore di risultati</div>
+    <label style="font-size:.9rem;color:#4a5568;font-weight:600;">Quante persone hai in lista? <span id="slider-val" style="color:#E94560;font-weight:800;">100</span></label>
+    <input type="range" min="20" max="300" value="100" id="lista-slider" oninput="calcResult(this.value)" style="margin:.8rem 0;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1rem;">
+      <div style="text-align:center;background:#fff;border-radius:10px;padding:.8rem;border:1px solid #e2e8f0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#1d4ed8;" id="res-conferme">35</div>
+        <div style="font-size:.78rem;color:#5a6070;">Conferme attese</div>
+      </div>
+      <div style="text-align:center;background:#fff;border-radius:10px;padding:.8rem;border:1px solid #e2e8f0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#7c3aed;" id="res-presenti">22</div>
+        <div style="font-size:.78rem;color:#5a6070;">Presenti all'evento</div>
+      </div>
+      <div style="text-align:center;background:#fff;border-radius:10px;padding:.8rem;border:1px solid #e2e8f0;">
+        <div style="font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#E94560;" id="res-guadagno">440€</div>
+        <div style="font-size:.78rem;color:#5a6070;">Guadagno potenziale</div>
+      </div>
+    </div>
+    <div style="margin-top:.8rem;font-size:.78rem;color:#a0aec0;">Media di settore: 20€ per ogni ospite presente</div>
+  </div>
+
+  <button class="action-btn action-btn-primary" onclick="alert('Trovi il documento nel Topic dedicato su Telegram')">📖 Apri la guida completa: Lista Nomi ed Esercizio Mnemonico →</button>
+</div>
+
+<div class="section-card fade-in" id="s-inau-invito">
+  <h2 class="section-title">📱 Giorni 2-6 — L'Invito Perfetto</h2>
+
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:.5rem;">Hai la lista. Adesso è il momento di invitare…e il modo in cui lo fai fa tutta la differenza.</p>
+  <div style="background:#fff5f7;border-left:4px solid #E94560;border-radius:8px;padding:1rem 1.2rem;margin-bottom:1rem;font-size:.92rem;color:#4a5568;line-height:1.8;">
+    <strong style="color:#E94560;">Non mandare messaggi scritti.<br>Non spiegare tutto al telefono.<br>Non svelare niente prima dell'evento.</strong>
+  </div>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1rem;">La regola è semplice: telefonate ai contatti più caldi, audio personalizzati a tutti gli altri. Ogni invito deve sembrare diretto a quella persona… un messaggio scritto uguale a tutti viene ignorato.</p>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.5rem;">Vuoi aumentare le conferme? Prepara un omaggio da estrarre tra i partecipanti — è una leva semplice ma potente per motivare le persone a esserci. Ricorda: chi ha fatto l'inaugurazione prima di te ha guadagnato in media 20€ per ogni partecipante. Ogni conferma che ottieni è un risultato concreto!</p>
+
+  <!-- TOGGLE SCRIPT -->
+  <div style="margin-bottom:1.5rem;">
+    <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="toggle-btn active" id="tog-inv1" onclick="toggleInvScript('inv1')">Script Esempio 1</button>
+      <button class="toggle-btn" id="tog-inv2" onclick="toggleInvScript('inv2')">Script Esempio 2</button>
+    </div>
+
+    <div id="script-inv1">
+      <div class="script-title">ESEMPIO 1 — AUDIO VOCALE</div>
+      <div class="script-box" id="inv1-text">Ciaoooo NOME!
+Come stai?
+Volevo condividere con te una novità a cui tengo tantissimo: ho appena aperto il mio negozio online! 🚀
+Essendo un negozio digitale, ovviamente non mi trovi su una via della città 😄
+Per festeggiare, ho organizzato una piccola inaugurazione su zoom: sarà un momento leggero, dura circa 30/40 minuti e ci sarà anche un'estrazione con un regalo speciale per chi partecipa! 🎁
+Mi farebbe davvero piacere condividere questo momento con te… e avere il tuo supporto, che per me conta tanto!
+Sarà GIORNO DATA E ORA..
+Vero che ci sarai?? Fammi sapere così ti riservo il posto!</div>
+      <div style="margin-top:.8rem;">
+        <button class="copy-btn" onclick="copyScript('inv1-text', this)">📋 Copia script</button>
+      </div>
+    </div>
+
+    <div id="script-inv2" style="display:none;">
+      <div class="script-title">ESEMPIO 2 — AUDIO VOCALE</div>
+      <div class="script-box" id="inv2-text">Ciao NOME!
+Come stai? È da un po' che non ci incrociamo... ti mando questo audio perché sto vivendo un momento di svolta a livello professionale.
+Ho appena aperto il mio negozio online nel settore del benessere ed è un progetto a cui tengo tantissimo. Come ogni nuova impresa che parte, la cosa più importante per me ora è farmi conoscere e far girare la voce! 📢
+Per questo sto organizzando un'inaugurazione su zoom della durata di circa 30 minuti, per festeggiare insieme e presentare quello che sto costruendo.
+Ed ho organizzato anche un regalo speciale ad estrazione a fine serata per ringraziare chi partecipa! 🎁
+Mi farebbe davvero piacere averti tra i miei ospiti per dare energia a questo inizio.
+Sarà GIORNO e DATA... riesci a tenerti libero?
+Fammi sapere se posso contare su di te, così ti riservo il posto!</div>
+      <div style="margin-top:.8rem;">
+        <button class="copy-btn" onclick="copyScript('inv2-text', this)">📋 Copia script</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCORDION FAQ INVITO -->
+  <div style="display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.5rem;">
+    <button class="accordion-btn" onclick="toggleAcc(this)">"NON POSSONO PARTECIPARE / HO ALTRI IMPEGNI" — cosa rispondere <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="faq-inv1">Non preoccuparti, siamo già andati sold out!
+Tuttavia se ti fa piacere sto già organizzando una seconda data per cui ti aggiorno presto ☺️
+Un caro saluto</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('faq-inv1', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">"DI COSA SI TRATTA / CHE TIPO DI NEGOZIO ONLINE È" — cosa rispondere <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="faq-inv2">Non ti spoilero nulla perché ti dovrei fare un vocale da 10 minuti per spiegarti tutto 😅😂
+Ti aspetto all'inaugurazione così ti racconto tutto!
+Perché… ovviamente ci sarai vero?? 😜❤</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('faq-inv2', this)">📋 Copia risposta</button>
+    </div>
+
+    <button class="accordion-btn" onclick="toggleAcc(this)">"OK PARTECIPO" — cosa rispondere <span class="arrow">▼</span></button>
+    <div class="accordion-content">
+      <div class="script-box" id="faq-inv3">Perfetto! Mi fa davvero piacere… allora conto sulla tua presenza!
+Mi raccomando, essendo prevista un'estrazione in diretta, qualora dovessi avere degli imprevisti ti chiedo gentilmente di avvisarmi per tempo così da poter organizzare tutto per il meglio.
+Nel frattempo scaricati l'app ZOOM gratuita sul cellulare o sul PC (in base al dispositivo con cui ti collegherai).
+Ti invierò io il link qui su WhatsApp il giorno stesso ☺</div>
+      <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('faq-inv3', this)">📋 Copia risposta</button>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:.8rem;">
+    <button class="action-btn action-btn-outline" onclick="alert('Template nella chat Telegram del team')">🖼️ Locandina Canva</button>
+    <button class="action-btn action-btn-dark" onclick="alert('Trovi il documento nel Topic Inviti su Telegram')">📖 Guida completa script, strategie e boost social →</button>
+  </div>
+</div>
+
+<div class="section-card fade-in" id="s-inau-business">
+  <h2 class="section-title">💼 Il Business — Come Parlare del Tuo Progetto</h2>
+
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1rem;">L'inaugurazione ti ha dato i primi risultati... adesso è il momento di pensare in grande. Non aspettare che siano gli altri a chiederti: se vedi potenziale in una persona, agisci.</p>
+  <p style="color:#4a5568;line-height:1.8;margin-bottom:1.5rem;">Parlare di business è riconoscere il potenziale nelle persone che hai intorno e dargli un'opportunità: non aspettare il momento perfetto perché il momento è adesso! Il processo è semplice… seguilo nell'ordine giusto e non improvvisare.</p>
+
+  <div class="warn-box" style="margin-bottom:1.5rem;border:2px solid #C47A00;border-radius:12px;background:#fffbeb;">
+    <div class="warn-box-icon">⚠️</div>
+    <div class="warn-box-text"><strong>IMPORTANTE:</strong> Questi script vanno sempre inviati come vocale o telefonata. Mai come messaggio scritto. Un vocale è personale, crea connessione e si ricorda. Un messaggio scritto uguale a tutti viene ignorato.</div>
+  </div>
+
+  <!-- 4 TAB BUSINESS -->
+  <div style="margin-bottom:.5rem;display:flex;flex-wrap:wrap;gap:.3rem;">
+    <button class="tab-btn active" onclick="openTabGroup('biz', 'biz1', this)">Già clienti</button>
+    <button class="tab-btn" onclick="openTabGroup('biz', 'biz2', this)">Amici e conoscenti</button>
+    <button class="tab-btn" onclick="openTabGroup('biz', 'biz3', this)">Chi era all'inaugurazione</button>
+    <button class="tab-btn" onclick="openTabGroup('biz', 'biz4', this)">BlooMIND — donne per le donne ⭐</button>
+  </div>
+
+  <div id="biz1" class="tab-content active">
+    <p style="font-size:.85rem;color:#5a6070;margin-bottom:.5rem;font-style:italic;">Per chi fa già parte della tua realtà · Obiettivo: rinforza il legame già esistente. Questa persona ti conosce e si fida di te. Punta sulla novità e sulla visione.</p>
+    <div class="script-title">SCRIPT VOCALE</div>
+    <div class="script-box" id="biz1-text">Ciao [Nome]! Spero che il tuo percorso stia andando alla grande. Ti scrivo perché ho qualcosa di importante da condividere con te. Io e la community con cui collaboro stiamo presentando l'evoluzione di BlooMIND — un ecosistema che unisce benessere, crescita personale, professionale e finanziaria. Mi farebbe piacere invitarti personalmente a un confronto privato per farti vedere da vicino come lavoriamo. Ti va se ci confrontiamo?</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('biz1-text', this)">📋 Copia script</button>
+  </div>
+
+  <div id="biz2" class="tab-content">
+    <p style="font-size:.85rem;color:#5a6070;margin-bottom:.5rem;font-style:italic;">Per chi ti vuole bene · Obiettivo: apri con una frase personalizzata che valorizza quella persona.</p>
+    <div class="script-title">SCRIPT VOCALE</div>
+    <div class="script-box" id="biz2-text">Ciao [Nome]! Spero tutto bene. Ti scrivo per una cosa importante… Ascolta, tu che: [scegli la frase di apertura*]… per questo ho pensato subito a te. Io e la community con cui collaboro stiamo presentando BlooMIND… un ecosistema che unisce benessere, crescita personale, professionale e finanziaria. Mi farebbe piacere farti vedere da vicino come lavoriamo. Ti va se ci confrontiamo?</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('biz2-text', this)">📋 Copia script</button>
+    <div style="margin-top:1rem;background:#f8f9fa;border-radius:10px;padding:1rem;">
+      <div style="font-weight:700;font-size:.85rem;color:#1A1A2E;margin-bottom:.5rem;">*FRASI DI APERTURA — scegli quella più vera per quella persona:</div>
+      <ul style="padding-left:1.2rem;font-size:.88rem;color:#4a5568;line-height:2;">
+        <li>Hai sempre avuto successo e ti stimo come persona</li>
+        <li>Sei sempre stata al mio fianco e lo apprezzo moltissimo</li>
+        <li>Hai una mente straordinaria e vedi cose che altri non vedono</li>
+        <li>Sei una delle persone più in gamba che conosco</li>
+        <li>Sei sempre aperta a nuove opportunità e lo apprezzo tantissimo</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="biz3" class="tab-content">
+    <p style="font-size:.85rem;color:#5a6070;margin-bottom:.5rem;font-style:italic;">Per chi è stato presente fin dall'inizio · Obiettivo: falle sentire che stai crescendo e che la vuoi con te.</p>
+    <div class="script-title">SCRIPT VOCALE</div>
+    <div class="script-box" id="biz3-text">[Nome], sai che ci tengo a tenerti aggiornata… dopo l'inaugurazione non hai idea di quello che è successo. In un mese ho ottenuto risultati che non mi aspettavo — ho guadagnato XXX € e le persone del team mi stanno seguendo in una maniera che mi lascia senza parole… é una cosa bellissima e voglio assolutamente che tu la veda da vicino. Ti va di confrontarci?</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('biz3-text', this)">📋 Copia script</button>
+  </div>
+
+  <div id="biz4" class="tab-content">
+    <p style="font-size:.85rem;color:#5a6070;margin-bottom:.5rem;font-style:italic;">Un movimento creato da donne · Obiettivo: parla al cuore. Usalo con le donne che senti pronte a sentirsi parte di qualcosa di più grande.</p>
+    <div class="script-title">SCRIPT VOCALE ⭐</div>
+    <div class="script-box" id="biz4-text">Ciao [Nome]! Come stai? Ti scrivo perché ci tengo che tu veda cosa ho costruito in questi mesi insieme a un gruppo pazzesco di donne. Abbiamo dato vita a BlooMIND — un progetto che mette finalmente la donna al centro. Si parla di valore, di libertà, di benessere reale. È un movimento creato da donne per le donne. Nato per chi ha smesso di accontentarsi e ha deciso che benessere, libertà e crescita professionale non devono essere un sogno. Devono essere un piano d'azione. Sai che ti stimo tantissimo e mi farebbe davvero piacere avere un tuo parere su quello che stiamo costruendo. Ti va se ci confrontiamo?</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('biz4-text', this)">📋 Copia script</button>
+  </div>
+
+  <!-- REGOLA D'ORO -->
+  <div class="rule-box" style="margin-top:1.5rem;">
+    <div class="rule-box-title">🏆 REGOLA D'ORO</div>
+    <div class="rule-box-text">L'obiettivo è sempre e solo uno — portare la persona in approfondimento con la tua guida. Sempre. L'unica eccezione è se dice "voglio iniziare subito" oppure un no definitivo e netto. In tutti gli altri casi — entusiasta, incerta, curiosa, scettica — la porti in call con la guida.</div>
+  </div>
+
+  <!-- SE DICE SÌ -->
+  <div style="background:#f0fdf4;border:2px solid #1A7A4A;border-radius:12px;padding:1.3rem 1.5rem;margin-top:1rem;margin-bottom:1rem;">
+    <div style="font-weight:700;color:#1A7A4A;margin-bottom:.8rem;font-size:1rem;">✅ SE DICE SÌ</div>
+    <div style="font-size:.88rem;color:#2d5a3d;line-height:1.8;">
+      <p style="margin-bottom:.6rem;"><strong>⭐ OPZIONE CONSIGLIATA:</strong><br>"Perfetto — ti mando il video. Tra l'altro, proprio perché ci tengo, mi piacerebbe già farti conoscere la persona che mi sta guidando — così quando lo hai visto ci confrontiamo tutti e tre. Mi daresti un paio di tue disponibilità?"<br><em>→ Hai già la call fissata. Mandi il video. Il lavoro è fatto.</em></p>
+      <p style="margin-bottom:.6rem;"><strong>SE INVECE VUOLE PRIMA VEDERE IL VIDEO DA SOLA:</strong><br>Prendi appuntamento e all'orario concordato contattala: se non scrive, scrivi tu.</p>
+      <p style="margin-bottom:.6rem;"><strong>FEEDBACK A CALDO:</strong> "Allora dimmi… cosa ti ha colpito di più?" — Chiedi in vocale.</p>
+      <p style="margin-bottom:.6rem;"><strong>Se è entusiasta:</strong> "Sono felicissima! Guarda, voglio darti l'opportunità di parlare direttamente con una delle persone straordinarie che mi sta guidando in questo percorso… ti darà un quadro completo e possiamo confrontarci insieme. Mi dai un paio di disponibilità così fissiamo subito?"</p>
+      <p style="margin-bottom:.6rem;"><strong>Se è incerta:</strong> "Capisco… guarda proprio perché sei tu voglio darti l'opportunità di parlare direttamente con una delle persone straordinarie che mi sta guidando... così hai tutte le informazioni e possiamo confrontarci insieme… che ne pensi?"</p>
+      <p style="margin-bottom:.3rem;"><strong>Se dice no — Tecnica 4F:</strong><br>FEEL: "Capisco come ti senti — anche io all'inizio avevo le stesse perplessità…"<br>FELT: "Anche io la pensavo così quando ho visto per la prima volta BlooMIND…"<br>FOUND: "Poi ho scoperto che…"<br>FLOW: "Ha senso per te approfondire almeno per avere tutte le informazioni?"</p>
+    </div>
+  </div>
+
+  <button class="action-btn action-btn-primary" onclick="alert('Trovi il link al chatbot su Telegram')">🤖 Chiedi all'Assistente AI</button>
+</div>
+
+<div class="section-card fade-in" id="s-inau-giorno7">
+  <h2 class="section-title">🎀 Giorno 7 — Il Tuo Grande Giorno</h2>
+  <p class="section-subtitle">È il momento del tuo taglio del nastro. Per i tuoi ospiti è solo "un evento online" — la differenza tra un professionista e un dilettante si vede nelle azioni che fai oggi.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    <div style="background:#f8f9fa;border-radius:12px;padding:1.2rem;border-top:4px solid #E94560;">
+      <div style="font-weight:700;color:#E94560;margin-bottom:.5rem;">Il tuo ruolo</div>
+      <ul style="font-size:.88rem;color:#4a5568;line-height:1.9;padding-left:1.2rem;">
+        <li>Accogli gli ospiti</li>
+        <li>Racconta il tuo "perché"</li>
+        <li>Presenta lo sponsor</li>
+        <li>Monitora la chat</li>
+        <li>Gestisci l'estrazione</li>
+      </ul>
+    </div>
+    <div style="background:#f8f9fa;border-radius:12px;padding:1.2rem;border-top:4px solid #1A7A4A;">
+      <div style="font-weight:700;color:#1A7A4A;margin-bottom:.5rem;">Il ruolo dello sponsor</div>
+      <ul style="font-size:.88rem;color:#4a5568;line-height:1.9;padding-left:1.2rem;">
+        <li>Presenta i prodotti</li>
+        <li>Spiega il business</li>
+        <li>Risponde alle domande</li>
+        <li>Chiude la presentazione</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;font-size:1.05rem;color:#1A1A2E;margin-bottom:1rem;">✅ Checklist pre-evento (spunta man mano)</div>
+    <div id="checklist-giorno7">
+      <div class="check-item"><input type="checkbox" id="g1" onchange="saveChecks()"><label for="g1">Ho preparato la ruota della fortuna con i nomi dei confermati (non inserire familiari stretti o persone molto vicine)</label></div>
+      <div class="check-item"><input type="checkbox" id="g2" onchange="saveChecks()"><label for="g2">Ho provato a condividere lo schermo con la ruota insieme al mio sponsor</label></div>
+      <div class="check-item"><input type="checkbox" id="g3" onchange="saveChecks()"><label for="g3">Ho preparato il mio discorso di apertura</label></div>
+      <div class="check-item"><input type="checkbox" id="g4" onchange="saveChecks()"><label for="g4">Ho contattato lo sponsor per allinearci prima dell'evento</label></div>
+      <div class="check-item"><input type="checkbox" id="g5" onchange="saveChecks()"><label for="g5">Ho inviato il messaggio di buongiorno a tutti i confermati</label></div>
+      <div class="check-item"><input type="checkbox" id="g6" onchange="saveChecks()"><label for="g6">Sono entrato/a in sala zoom 15 minuti prima</label></div>
+      <div class="check-item"><input type="checkbox" id="g7" onchange="saveChecks()"><label for="g7">Ho inviato il messaggio con il link un paio di ore prima dell'evento</label></div>
+      <div class="check-item"><input type="checkbox" id="g8" onchange="saveChecks()"><label for="g8">Ho inviato il link a tutti 10 minuti prima dell'evento</label></div>
+      <div class="check-item"><input type="checkbox" id="g9" onchange="saveChecks()"><label for="g9">Ho carta e penna per scrivere i nomi di tutti i presenti</label></div>
+    </div>
+    <button onclick="resetChecks()" style="margin-top:.8rem;background:#f0f2f5;color:#5a6070;border:1px solid #e2e8f0;border-radius:8px;padding:.5rem 1rem;font-size:.82rem;cursor:pointer;">↺ Reset checklist</button>
+  </div>
+
+  <!-- MONITORA CHAT -->
+  <div class="info-card accent" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;font-size:1rem;margin-bottom:.8rem;color:#ff8c69;">📊 Monitora la chat durante la presentazione</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:1rem;text-align:center;">
+        <div style="font-size:2rem;font-weight:800;color:#ff8c69;">1</div>
+        <div style="font-size:.85rem;color:#a0aec0;margin-top:.3rem;">Scrive 1 in chat = Interessata ai <strong style="color:#fff;">prodotti</strong></div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:1rem;text-align:center;">
+        <div style="font-size:2rem;font-weight:800;color:#7dd3fc;">2</div>
+        <div style="font-size:.85rem;color:#a0aec0;margin-top:.3rem;">Scrive 2 in chat = Interessata al <strong style="color:#fff;">business</strong></div>
+      </div>
+    </div>
+    <p style="font-size:.85rem;color:#a0aec0;margin-top:1rem;">Fai screenshot della chat + scrivi su carta i nomi di tutti i presenti (anche chi non ha scritto nulla). Ti servirà per il follow-up.</p>
+  </div>
+
+  <button class="action-btn action-btn-dark" onclick="alert('Trovi il documento nel Topic 7 su Telegram')">📖 Guida operativa completa →</button>
+</div>
+
+<div class="section-card fade-in" id="s-inau-followup">
+  <h2 class="section-title">🎯 Follow-Up e Chiusura</h2>
+  <p class="section-subtitle">L'Inaugurazione è la semina. Il follow-up è il raccolto. Qui avviene l'<strong>80% delle conversioni</strong>.</p>
+
+  <div class="info-card danger" style="margin-bottom:1.5rem;">
+    <div style="font-weight:700;color:#E94560;font-size:1rem;margin-bottom:.5rem;">😱 L'errore del 90%</div>
+    <p style="font-size:.92rem;color:#4a5568;line-height:1.7;margin:0;">Il <strong>90% dei collaboratori non ottiene risultati</strong> semplicemente perché non fa follow-up. Molti pensano che la presentazione faccia tutto il lavoro — ma senza un contatto post-evento, l'interesse cala ogni ora che passa.</p>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;">
+    <div style="background:#f0fdf4;border:2px solid #1A7A4A;border-radius:12px;padding:1.2rem;text-align:center;">
+      <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:#1A7A4A;">85%</div>
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin:.3rem 0;">Entro 24 ore</div>
+      <div style="font-size:.8rem;color:#2d5a3d;line-height:1.5;">Il momento d'oro. L'emozione è alta, i benefici sono freschi.</div>
+    </div>
+    <div style="background:#fffbeb;border:2px solid #C47A00;border-radius:12px;padding:1.2rem;text-align:center;">
+      <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:#C47A00;">50%</div>
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin:.3rem 0;">Entro 48 ore</div>
+      <div style="font-size:.8rem;color:#5a4a00;line-height:1.5;">La vita quotidiana inizia a prendere il sopravvento.</div>
+    </div>
+    <div style="background:#fff5f7;border:2px solid #E94560;border-radius:12px;padding:1.2rem;text-align:center;">
+      <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:#E94560;">⬇️</div>
+      <div style="font-weight:700;font-size:.9rem;color:#1A1A2E;margin:.3rem 0;">Oltre 72 ore</div>
+      <div style="font-size:.8rem;color:#7a0020;line-height:1.5;">L'impatto sbiadisce. Ogni ora di ritardo pesa il doppio.</div>
+    </div>
+  </div>
+
+  <!-- TAB FOLLOW-UP -->
+  <div style="margin-bottom:.5rem;display:flex;gap:.3rem;flex-wrap:wrap;">
+    <button class="tab-btn active" onclick="openTabGroup('fu', 'fu1', this)">Ha scritto 1 (prodotto)</button>
+    <button class="tab-btn" onclick="openTabGroup('fu', 'fu2', this)">Ha scritto 2 (business)</button>
+    <button class="tab-btn" onclick="openTabGroup('fu', 'fu3', this)">Non ha scritto nulla</button>
+  </div>
+
+  <div id="fu1" class="tab-content active">
+    <div class="script-title">SCRIPT FOLLOW-UP — INTERESSE PRODOTTO</div>
+    <div class="script-box" id="fu1-text">Ciao [Nome]! Ho visto che durante la presentazione hai mostrato interesse per i prodotti — ero sicura/o che qualcosa avrebbe attirato la tua attenzione 😊 Voglio assisterti nella scelta del prodotto più adatto a te, così da farti vivere la migliore esperienza possibile. Tra le soluzioni che abbiamo mostrato, quale ti ha colpito di più?</div>
+    <div style="margin-top:1rem;background:#f0fdf4;border-radius:8px;padding:.8rem;font-size:.85rem;color:#2d5a3d;">💡 <strong>Non mandare subito il catalogo!</strong> Prima capisce le sue esigenze, poi suggerisci il prodotto giusto. Chiedi, ascolta, consiglia.</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('fu1-text', this)">📋 Copia script</button>
+  </div>
+
+  <div id="fu2" class="tab-content">
+    <div class="script-title">SCRIPT FOLLOW-UP — INTERESSE BUSINESS</div>
+    <div class="script-box" id="fu2-text">Ciao [Nome]! Grazie per avermi supportato con la tua presenza — averti avuto con me in questa avventura è stato bellissimo! Ho visto che hai scritto 2 in chat... ottimo, immaginavo tu avessi questa visione! È davvero più potente di quanto immagini. Ho la possibilità di organizzare una call di approfondimento insieme al mio sponsor — iniziare con il suo supporto ti darebbe una marcia in più. Mi dai un paio di alternative di giorno e orario così fisso subito?</div>
+    <div style="margin-top:1rem;background:#eff6ff;border-radius:8px;padding:.8rem;font-size:.85rem;color:#1e3a8a;">💡 <strong>Non spiegare il business da sola.</strong> Chiedi supporto allo sponsor per la call a tre. Segui il sistema.</div>
+    <div style="margin-top:.8rem;background:#fffbeb;border:1px solid #C47A00;border-radius:8px;padding:.8rem;font-size:.85rem;color:#5a4a00;">⚠️ Prima della call di approfondimento manda il video di presentazione BlooMIND (lo trovi su Telegram). Assicurati che lo abbia visto completamente prima della call: chi entra in call avendo già visto il video ha le idee più chiare e la call è molto più efficace.</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('fu2-text', this)">📋 Copia script</button>
+  </div>
+
+  <div id="fu3" class="tab-content">
+    <div class="script-title">SCRIPT FOLLOW-UP — NESSUNA REAZIONE</div>
+    <div class="script-box" id="fu3-text">Ciao [Nome]! Grazie per aver partecipato all'inaugurazione — per me è stato davvero importante averti lì 🙏 Come ti senti rispetto a quello che hai visto? C'è qualcosa che ti ha incuriosito, o hai dubbi su cui ti posso aiutare?</div>
+    <div style="margin-top:1rem;background:#fffbeb;border-radius:8px;padding:.8rem;font-size:.85rem;color:#5a4a00;">💡 Un "no" oggi può diventare un "sì" domani. Mantieni il contatto in modo naturale, senza pressioni.</div>
+    <button class="copy-btn" style="margin-top:.8rem;" onclick="copyScript('fu3-text', this)">📋 Copia script</button>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER NAV -->
+<div style="background:#1A1A2E;margin-top:2rem;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;">
+  <a href="manuale-collaboratore-v2.html" style="color:#a0aec0;font-size:.85rem;text-decoration:none;">← Torna al Manuale Completo</a>
+  <span style="color:#a0aec0;font-size:.78rem;">© BlooMIND — Riservato ai collaboratori</span>
+</div>
+
+<script>
+
+// ============ HOME / MANUAL TOGGLE ============
+function showManual(){}
+
+function goHome(){}
+
+// ============ SIDEBAR SCROLL SPY ============
+const allSections = [
+  's-startup-welcome','s-startup-filosofia','s-startup-passi',
+  's-inau-panoramica','s-inau-lista','s-inau-invito','s-inau-business','s-inau-giorno7','s-inau-followup',
+  's-contatti-offline','s-contatti-online',
+  's-obiezioni',
+  's-duplicazione',
+  's-pro-esercitazione','s-pro-academy'
+];
+
+function navTo(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const offset = 20;
+    const top = el.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({top: top, behavior: 'smooth'});
+  }
+  if (window.innerWidth <= 768) toggleSidebar(false);
+  updateActiveNav(id);
+  return false;
+}
+
+function updateActiveNav(current) {
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    const onclick = item.getAttribute('onclick') || '';
+    const match = onclick.match(/navTo\('([^']+)'\)/);
+    if (match) {
+      item.classList.toggle('active', match[1] === current);
+    }
+  });
+}
+
+window.addEventListener('scroll', function() {
+  if (document.getElementById('main').style.display === 'none') return;
+  const scrollY = window.pageYOffset;
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  if (docH > 0) {
+    const pct = Math.round((scrollY / docH) * 100);
+    const pb = document.getElementById('progress-bar');
+    const pl = document.getElementById('progress-label');
+    if (pb) pb.style.width = pct + '%';
+    if (pl) pl.textContent = pct + '% completato';
+  }
+
+  let current = allSections[0];
+  allSections.forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 80) current = id;
+  });
+  updateActiveNav(current);
+
+  const bt = document.getElementById('back-top');
+  if (bt) bt.classList.toggle('show', scrollY > 400);
+
+  document.querySelectorAll('.fade-in:not(.visible)').forEach(function(el) {
+    if (el.getBoundingClientRect().top < window.innerHeight - 60) el.classList.add('visible');
+  });
+});
+
+function initFadeIn() {
+  document.querySelectorAll('.fade-in').forEach(function(el) {
+    if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('visible');
+  });
+}
+
+// ============ MOBILE SIDEBAR ============
+function toggleSidebar(){}
+
+// ============ NAV SECTION COLLAPSE ============
+function toggleNavSection(){}
+
+// ============ ACCORDION ============
+function toggleAcc(btn) {
+  const content = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  content.classList.toggle('open', !wasOpen);
+}
+
+function toggleStepAcc(btn) {
+  const body = btn.nextElementSibling;
+  const wasOpen = btn.classList.contains('open');
+  btn.classList.toggle('open', !wasOpen);
+  body.classList.toggle('open', !wasOpen);
+}
+
+// ============ TABS ============
+function openTabGroup(group, tabId, btn) {
+  // Close all tabs with ids starting with group prefix
+  document.querySelectorAll('[id^="' + group + '"]').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  // Remove active from sibling tab buttons
+  if (btn) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  const target = document.getElementById(tabId);
+  if (target) target.classList.add('active');
+}
+
+// ============ TOGGLE INVITO SCRIPT ============
+function toggleInvScript(type) {
+  const s1 = document.getElementById('script-inv1');
+  const s2 = document.getElementById('script-inv2');
+  const b1 = document.getElementById('tog-inv1');
+  const b2 = document.getElementById('tog-inv2');
+  if (type === 'inv1') {
+    s1.style.display = 'block'; s2.style.display = 'none';
+    b1.classList.add('active'); b2.classList.remove('active');
+  } else {
+    s2.style.display = 'block'; s1.style.display = 'none';
+    b2.classList.add('active'); b1.classList.remove('active');
+  }
+}
+
+// ============ COPY SCRIPT (reads .script-box text content) ============
+function copyScript(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+  const doFeedback = function(b) {
+    if (!b) return;
+    const orig = b.innerHTML;
+    b.innerHTML = '✓ Copiato!';
+    b.classList.add('copied');
+    setTimeout(function() { b.innerHTML = orig; b.classList.remove('copied'); }, 2000);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function() { doFeedback(btn); });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    doFeedback(btn);
+  }
+}
+
+// ============ CHECKLIST ============
+function saveChecks() {
+  const state = {};
+  for (let i=1; i<=9; i++) {
+    const el = document.getElementById('g'+i);
+    if (el) state['g'+i] = el.checked;
+  }
+  localStorage.setItem('bloomind_checklist_v2', JSON.stringify(state));
+}
+function loadChecks() {
+  const saved = localStorage.getItem('bloomind_checklist_v2');
+  if (saved) {
+    const state = JSON.parse(saved);
+    for (let i=1; i<=9; i++) {
+      const el = document.getElementById('g'+i);
+      if (el) el.checked = state['g'+i] || false;
+    }
+  }
+}
+function resetChecks() {
+  for (let i=1; i<=9; i++) {
+    const el = document.getElementById('g'+i);
+    if (el) el.checked = false;
+  }
+  localStorage.removeItem('bloomind_checklist_v2');
+}
+
+// ============ SLIDER CALCOLATORE ============
+function calcResult(val) {
+  val = parseInt(val);
+  document.getElementById('slider-val').textContent = val;
+  const conferme = Math.round(val * 0.35);
+  const presenti = Math.round(val * 0.22);
+  const guadagno = presenti * 20;
+  document.getElementById('res-conferme').textContent = conferme;
+  document.getElementById('res-presenti').textContent = presenti;
+  document.getElementById('res-guadagno').textContent = guadagno + '€';
+}
+
+// ============ FONT CONTROL ============
+const fontSizes = [16, 18, 22];
+let currentFS = 1;
+function changeFont(dir) {
+  if (dir === 0) currentFS = 1;
+  else currentFS = Math.max(0, Math.min(2, currentFS + dir));
+  document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  localStorage.setItem('bloomind_fs', currentFS);
+}
+(function loadFS() {
+  const saved = localStorage.getItem('bloomind_fs');
+  if (saved !== null) {
+    currentFS = parseInt(saved);
+    document.documentElement.style.setProperty('--fs', fontSizes[currentFS] + 'px');
+  }
+})();
+
+// ============ COUNTER ANIMATION ============
+function animateCounter(id, target, suffix) {
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const el = document.getElementById(id);
+  if (!el) return;
+  const timer = setInterval(function() {
+    current = Math.min(current + step, target);
+    el.textContent = current + (suffix || '');
+    if (current >= target) clearInterval(timer);
+  }, 30);
+}
+
+const heroObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) {
+      animateCounter('cnt1', 98, '%');
+      animateCounter('cnt2', 300, '€');
+      heroObserver.disconnect();
+    }
+  });
+}, {threshold: 0.3});
+
+// Observer attivato solo quando il main è visibile
+function setupHeroObserver() {
+  const hero = document.getElementById('s-startup-welcome');
+  if (hero) heroObserver.observe(hero);
+}
+
+// ============ SCROLL TO TOP ============
+function scrollToTop() {
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ============ MODAL ============
+function openModal(title, body) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ============ INIT ============
+loadChecks();
+// showManual si chiama dai link home — non si mostra niente all'avvio
+
+</script>
+</body>
+</html>
